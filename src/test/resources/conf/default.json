@@ -1,0 +1,24 @@
+{"defaults": {
+    "jdbcDriver" : "",
+    "connectionString": "./src/test/gathered",
+    "username": "",
+    "password": "",
+    "mode": "query",
+    "parallel": false
+  },
+  "dbPoolConfig" : {
+    "minIdle": 5,
+    "maxIdle": 10,
+    "maxOpenPreparedStatements" : 100
+  },
+  "queries": [
+    {
+      "queries": ["select count(*) from test"]
+    },
+    {
+      "queries": [
+        "select count(*) from test",
+        "select count(*) from test"]
+    }
+  ]
+}
