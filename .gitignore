@@ -1,3 +1,5 @@
 .gradle/
 .idea/
 out/
+logs/
+src/test/db/

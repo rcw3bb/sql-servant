@@ -19,8 +19,12 @@ class JsonConfigWrapper extends JsonConfig {
         if (!this.defaults) {
             def defaults = jsonConfig.defaults
             this.defaults = new DefaultConfig(
-                    mode: defaults.mode?:"query",
-                    parallel: defaults.parallel?:false
+                    mode: defaults.mode?:'stmt',
+                    jdbcDriver: defaults.jdbcDriver,
+                    connectionString: defaults.connectionString,
+                    parallel: defaults.parallel?:false,
+                    username: defaults.username?:'',
+                    password: defaults.password?:''
             )
         }
         this.defaults

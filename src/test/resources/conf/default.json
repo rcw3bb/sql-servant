@@ -1,6 +1,6 @@
 {"defaults": {
     "jdbcDriver" : "",
-    "connectionString": "./src/test/gathered",
+    "connectionString": "test connection string",
     "username": "",
     "password": "",
     "mode": "query",
@@ -17,8 +17,8 @@
     },
     {
       "queries": [
-        "select count(*) from test",
-        "select count(*) from test"]
+        "select count(*) from test1",
+        "select count(*) from test2"]
     }
   ]
 }
