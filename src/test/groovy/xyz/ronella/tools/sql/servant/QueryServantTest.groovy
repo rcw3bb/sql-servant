@@ -19,6 +19,7 @@ class QueryServantTest {
             if (new File('./src/test/db/test1.mv.db').exists()) {
                 DeleteDbFiles.execute('./src/test/db/', 'test1', true)
                 DeleteDbFiles.execute('./src/test/db/', 'test2', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test3', true)
             }
         }
         try {

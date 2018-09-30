@@ -2,6 +2,8 @@ package xyz.ronella.tools.sql.servant
 
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
+import java.util.concurrent.Future
+
 interface IOperation {
-    def perform(Config config, QueriesConfig qryConfig, CliArgs cliArgs)
+    def perform(List<Future> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs)
 }

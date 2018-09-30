@@ -36,13 +36,14 @@ class JsonConfigWrapper extends JsonConfig {
                 connectionString: ___qryConfig.connectionString ?: defaults.connectionString,
                 username: ___qryConfig.username ?: defaults.username,
                 password: ___qryConfig.password ?: defaults.password,
-                mode: ___qryConfig.mode ?: defaults.mode,
-                parallel: ___qryConfig.parallel ?: defaults.parallel,
+                mode: ___qryConfig.mode==null ? defaults.mode : ___qryConfig.mode,
+                parallel: ___qryConfig.parallel==null ? defaults.parallel : ___qryConfig.parallel,
                 description: description,
                 queries: ___qryConfig.queries ?: defaults.queries)
 
-        newQueriesConfig.next= ___qryConfig.next ? createNewQueryConfig(___qryConfig.next
-                , "${description} [NEXT]", newQueriesConfig) : null
+        def nextConfig=___qryConfig.next
+        newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig
+                , nextConfig.description ?: "${description} [NEXT]", newQueriesConfig) : null
 
         return newQueriesConfig
     }

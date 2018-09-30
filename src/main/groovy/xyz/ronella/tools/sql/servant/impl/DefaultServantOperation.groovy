@@ -4,35 +4,48 @@ import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
+import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
-import xyz.ronella.tools.sql.servant.db.DBManager
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
+
+import java.util.concurrent.Future
 
 class DefaultServantOperation implements IOperation {
 
     public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
 
     @Override
-    def perform(Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+    def perform(List<Future> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
-        LOG.info "Connection String: ${qryConfig.connectionString}"
-        LOG.info "Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
+        LOG.info "[${qryConfig.description}] Connection String: ${qryConfig.connectionString}"
+        LOG.info "[${qryConfig.description}] Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
+
+        List<Future> localFutures = new ArrayList<>()
+
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
             queries.each {query ->
-                LOG.info("Executing: ${query}")
-                try {
-                    DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, query)
-                    LOG.info("Success running: ${query}")
+
+                def servantTask = new ServantOperationTask(config, qryConfig, query)
+
+                if (qryConfig.parallel) {
+                    ParallelEngine.instance.with {
+                        if (!isStarted()) {
+                            start()
+                        }
+                        def future = process(servantTask)
+                        localFutures.add(future)
+                        futures.add(future)
+                    }
                 }
-                catch(Exception e) {
-                    LOG.info("Failed running: ${query}")
-                    LOG.error(e.fillInStackTrace())
+                else {
+                    servantTask.run()
                 }
             }
         }
         if (qryConfig.next) {
-            perform(config, qryConfig.next, cliArgs)
+            localFutures.each {it.get()}
+            perform(futures, config, qryConfig.next, cliArgs)
         }
     }
 }

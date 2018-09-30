@@ -99,9 +99,9 @@ class DBManager {
                                 }
                             }
                             if (firstLoad) {
-                                LOG.info("[HDR]: ${sbHdr.toString()}")
+                                LOG.info("[${qryConfig.description}] [HDR]: ${sbHdr.toString()}")
                             }
-                            LOG.info("[REC]: ${sbRec.toString()}")
+                            LOG.info("[${qryConfig.description}] [REC]: ${sbRec.toString()}")
                             firstLoad = false
                         }
                     }

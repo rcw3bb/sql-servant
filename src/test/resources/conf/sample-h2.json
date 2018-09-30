@@ -31,7 +31,23 @@
           "mode" : "query"
         }
       },
-      "connectionString": "jdbc:h2:./src/test/db/test2"
+      "connectionString": "jdbc:h2:./src/test/db/test2",
+      "parallel" : true
+    },
+    {
+      "queries": ["CREATE TABLE PERSON(id int primary key, name varchar(255))"],
+      "next" : {
+        "queries": [
+          "insert into person (id, name) values (1, 'test1 name')",
+          "insert into person (id, name) values (2, 'test2 name')"
+        ],
+        "next" : {
+          "queries" : ["select * from person"],
+          "mode" : "query"
+        }
+      },
+      "connectionString": "jdbc:h2:./src/test/db/test3",
+      "parallel" : true
     }
   ]
 }

@@ -4,6 +4,8 @@ import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.impl.DefaultServantOperation
 import xyz.ronella.tools.sql.servant.impl.NoopOperation
 
+import java.util.concurrent.Future
+
 class OperationStrategy {
 
     private CliArgs cliArgs
@@ -19,8 +21,8 @@ class OperationStrategy {
         }
     }
 
-    def runOperation(Config config, QueriesConfig queriesConfig) {
-        this.operation.perform(config, queriesConfig, cliArgs)
+    def runOperation(List<Future> futures, Config config, QueriesConfig queriesConfig) {
+        this.operation.perform(futures, config, queriesConfig, cliArgs)
     }
 
 }

@@ -7,12 +7,14 @@ import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
+import java.util.concurrent.Future
+
 class NoopOperation implements IOperation {
 
     public final static def LOG = Logger.getLogger(NoopOperation.class.name)
 
     @Override
-    def perform(Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+    def perform(List<Future> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
         LOG.info "Connection String: ${qryConfig.connectionString}"
         LOG.info "Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
@@ -23,7 +25,7 @@ class NoopOperation implements IOperation {
             }
         }
         if (qryConfig.next) {
-            perform(config, qryConfig.next, cliArgs)
+            perform(futures, config, qryConfig.next, cliArgs)
         }
     }
 }

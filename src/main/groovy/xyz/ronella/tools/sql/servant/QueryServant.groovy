@@ -1,6 +1,9 @@
 package xyz.ronella.tools.sql.servant
 
 import org.apache.log4j.Logger
+import xyz.ronella.tools.sql.servant.async.ParallelEngine
+
+import java.util.concurrent.Future
 
 class QueryServant {
 
@@ -16,9 +19,29 @@ class QueryServant {
         LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
         LOG.info "Configuration: ${config.configFilename}"
 
-        config.configAsJson.queries.each { qryConfig ->
-            new OperationStrategy(args).runOperation(config, qryConfig)
+        def configJson = config.configAsJson
+
+        if (configJson) {
+            ParallelEngine.instance.with {
+                List<Future> futures = new ArrayList<>()
+                try {
+                    configJson.queries.each { qryConfig ->
+                        new OperationStrategy(args).runOperation(futures, config, qryConfig)
+                    }
+                    futures.each {it.get()}
+                }
+                finally {
+                    if (isStarted()) {
+                        stop()
+                    }
+                }
+            }
         }
+        else {
+            LOG.info "Nothing to process."
+        }
+
+        LOG.info 'Done'
     }
 
 }
