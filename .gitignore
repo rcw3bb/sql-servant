@@ -3,3 +3,4 @@
 out/
 logs/
 src/test/db/
+build/
