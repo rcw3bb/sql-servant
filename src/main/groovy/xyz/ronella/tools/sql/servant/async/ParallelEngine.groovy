@@ -64,6 +64,7 @@ class ParallelEngine {
         if (isStarted) {
             LOG.info "Stopping engine"
             executor.awaitTermination(500, TimeUnit.MILLISECONDS)
+            LOG.info "Engine completely stopped"
             isStarted = false
         }
         else {
