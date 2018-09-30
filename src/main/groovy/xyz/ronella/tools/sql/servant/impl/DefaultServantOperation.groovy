@@ -43,9 +43,18 @@ class DefaultServantOperation implements IOperation {
                 }
             }
         }
+
         if (qryConfig.next) {
-            localFutures.each {it.get()}
-            perform(futures, config, qryConfig.next, cliArgs)
+            def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
+
+/*
+            if (qryConfig.parallel) {
+                futures.add(ParallelEngine.instance.process(nextTask))
+            }
+            else {
+*/
+                nextTask.run()
+//            }
         }
     }
 }
