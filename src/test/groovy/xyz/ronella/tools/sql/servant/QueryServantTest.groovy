@@ -5,7 +5,7 @@ import org.junit.Test
 
 class QueryServantTest {
 
-    final def testDefaultQueryServant = new QueryServant(new Config('./src/test/resources/conf','default'))
+    final def testDefaultQueryServant = new QueryServant(new Config('./src/test/resources/conf','ss-default'))
     final def testH2QueryServant = new QueryServant(new Config('./src/test/resources/conf','sample-h2'))
 
     @Test

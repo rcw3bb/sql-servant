@@ -20,7 +20,7 @@ class Config {
 
     Config(String confDir, String filename) {
         this.confDir = "${new File(confDir?:'./conf').absolutePath}${File.separator}"
-        this.filename = "${this.confDir}${filename?:'default'}.json"
+        this.filename = "${this.confDir}${filename?:'ss-default'}.json"
     }
 
     String getConfigFilename() {

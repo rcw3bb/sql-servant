@@ -30,21 +30,29 @@ class JsonConfigWrapper extends JsonConfig {
         this.defaults
     }
 
+    private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
+        QueriesConfig newQueriesConfig = new QueriesConfig(
+                jdbcDriver: ___qryConfig.jdbcDriver ?: defaults.jdbcDriver,
+                connectionString: ___qryConfig.connectionString ?: defaults.connectionString,
+                username: ___qryConfig.username ?: defaults.username,
+                password: ___qryConfig.password ?: defaults.password,
+                mode: ___qryConfig.mode ?: defaults.mode,
+                parallel: ___qryConfig.parallel ?: defaults.parallel,
+                description: description,
+                queries: ___qryConfig.queries ?: defaults.queries)
+
+        newQueriesConfig.next= ___qryConfig.next ? createNewQueryConfig(___qryConfig.next
+                , "${description} [NEXT]", newQueriesConfig) : null
+
+        return newQueriesConfig
+    }
+
     QueriesConfig[] getQueries() {
         if (!this.queries) {
             List<QueriesConfig> queries = new ArrayList<>()
             jsonConfig.queries.eachWithIndex { it, ___idx ->
-                def defaults = this.getDefaults()
-                queries.add(new QueriesConfig(
-                        jdbcDriver: it.jdbcDriver ?: defaults.jdbcDriver,
-                        connectionString: it.connectionString ?: defaults.connectionString,
-                        username: it.username ?: defaults.username,
-                        password: it.password ?: defaults.password,
-                        mode: it.mode ?: defaults.mode,
-                        parallel: it.parallel ?: defaults.parallel,
-                        description: it.description ?: DEFAULT_QUERY_DESCRIPTION(___idx+1),
-                        queries: it.queries ?: new String[0]
-                ))
+                queries.add(createNewQueryConfig(it, it.description ?: DEFAULT_QUERY_DESCRIPTION(___idx+1),
+                new QueriesConfigDefaultWrapper(this.getDefaults())))
             }
             this.queries = queries.toArray(new QueriesConfig[0])
         }

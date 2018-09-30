@@ -4,17 +4,17 @@ import org.junit.Test
 
 class ConfigTest {
 
-    final def testDefaultConfig = new Config('./src/test/resources/conf','default')
+    final def testDefaultConfig = new Config('./src/test/resources/conf','ss-default')
     final def testEmptyDefaultConfig = new Config('./src/test/resources/conf','empty')
 
     @Test
     void testDefaultConfig() {
-        assert "${new File('.').absolutePath}${File.separator}conf${File.separator}default.json"==(new Config().configFilename)
+        assert "${new File('.').absolutePath}${File.separator}conf${File.separator}ss-default.json"==(new Config().configFilename)
     }
 
     @Test
     void testDefaultConfigQueriesCount() {
-        assert 2==testDefaultConfig.configAsJson.queries.length
+        assert 3==testDefaultConfig.configAsJson.queries.length
     }
 
     @Test
@@ -42,6 +42,19 @@ class ConfigTest {
         assert 50==testEmptyDefaultConfig.configAsJson.dbPoolConfig.maxOpenPreparedStatements
     }
 
+    @Test
+    void testDefaultConfigNextQuery() {
+        1==testDefaultConfig.configAsJson.queries[2].next.queries.length
+    }
 
+    @Test
+    void testDefaultConfigNextQueryDescription() {
+        assert 'Query 3 [NEXT]'==testDefaultConfig.configAsJson.queries[2].next.description
+    }
+
+    @Test
+    void testDefaultConfigNextNextQueryDescription() {
+        assert 'Query 3 [NEXT] [NEXT]'==testDefaultConfig.configAsJson.queries[2].next.next.description
+    }
 
 }

@@ -6,6 +6,7 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.DBManager
+import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
 class DefaultServantOperation implements IOperation {
 
@@ -13,6 +14,9 @@ class DefaultServantOperation implements IOperation {
 
     @Override
     def perform(Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+        LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
+        LOG.info "Connection String: ${qryConfig.connectionString}"
+        LOG.info "Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
             queries.each {query ->
@@ -26,6 +30,9 @@ class DefaultServantOperation implements IOperation {
                     LOG.error(e.fillInStackTrace())
                 }
             }
+        }
+        if (qryConfig.next) {
+            perform(config, qryConfig.next, cliArgs)
         }
     }
 }

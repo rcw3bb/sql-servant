@@ -1,7 +1,6 @@
 package xyz.ronella.tools.sql.servant
 
 import org.apache.log4j.Logger
-import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
 class QueryServant {
 
@@ -18,9 +17,6 @@ class QueryServant {
         LOG.info "Configuration: ${config.configFilename}"
 
         config.configAsJson.queries.each { qryConfig ->
-            LOG.info "---[${qryConfig.description}]${args.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
-            LOG.info "Connection String: ${qryConfig.connectionString}"
-            LOG.info "Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
             new OperationStrategy(args).runOperation(config, qryConfig)
         }
     }
