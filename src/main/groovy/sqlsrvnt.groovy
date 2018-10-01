@@ -27,7 +27,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         cli.usage()
     }
     else if (options.v) {
-        println 'SQL Servant v1.0.0-SNAPSHOT by Ron [2018]'
+        println 'SQL Servant v1.0.0 by Ron [2018]'
     }
     else {
         optionsLogic.each {___key , ___value ->
