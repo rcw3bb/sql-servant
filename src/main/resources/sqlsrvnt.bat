@@ -9,7 +9,7 @@ rem Add jdbc drivers here
 set DRVS_DIR=%~dp0drivers
 set DRVS=%DRVS_DIR%\h2-1.4.197.jar
 
-set MAIN_JAR=%LIBS_DIR%\sql-servant-1.0.0.jar
+set MAIN_JAR=%LIBS_DIR%\sql-servant-1.1.0-SNAPSHOT.jar
 set CLASSPATH=.;%LIBS%;%MAIN_JAR%;%DRVS%
 
 java -cp %CLASSPATH% sqlsrvnt %*
