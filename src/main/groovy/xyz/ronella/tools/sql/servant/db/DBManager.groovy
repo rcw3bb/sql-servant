@@ -48,7 +48,8 @@ class DBManager {
         if (!dataSource) {
             try {
                 LOCK.lock()
-                if (!DATA_SOURCES.get(connectionString)) {
+                dataSource = DATA_SOURCES.get(connectionString)
+                if (!dataSource) {
                     Class.forName(qryConfig.jdbcDriver)
 
                     dataSource = new BasicDataSource()
