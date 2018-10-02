@@ -3,6 +3,18 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.QueryServant
 
 void processArgs(final CliArgs cliArgs, String ... args) {
+    final Properties properties = new Properties()
+
+    InputStream sqlsrvntIS
+    try {
+        sqlsrvntIS = this.getClass().getClassLoader().getResourceAsStream('sqlsrvnt.properties')
+        properties.load(sqlsrvntIS)
+    }
+    finally {
+        if (sqlsrvntIS) {
+            sqlsrvntIS.close()
+        }
+    }
 
     def cli = new CliBuilder(usage:'sqlsrvnt -[hnpcv] [config-name]')
     cli.with {
@@ -27,7 +39,9 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         cli.usage()
     }
     else if (options.v) {
-        println 'SQL Servant v1.1.0-SNAPSHOT by Ron [2018]'
+        String version = properties.getProperty('version', '')
+        String year = properties.getProperty('year', '2018')
+        println "SQL Servant ${version} by Ron [${year}]"
     }
     else {
         optionsLogic.each {___key , ___value ->

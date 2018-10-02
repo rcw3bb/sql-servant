@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.*
+
 group 'xyz.ronella.tools'
 version '1.1.0-SNAPSHOT'
 
@@ -39,9 +41,23 @@ jar {
     }
 }
 
+processResources {
+    from (sourceSets.main.resources) {
+        include '**/*.properties'
+        filter ReplaceTokens, tokens : ['app.version': project.version,
+                                        'year' : new Date().format('MMM YYYY')]
+    }
+}
+
 task pack(type: Zip, dependsOn: 'jar') {
     it.baseName = buildBaseName
     destinationDir = file(packDirPath)
+
+    String libraries = configurations.compile.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%LIBS_DIR%\\${___file.name}"})
+
+    String drivers = configurations.drivers.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
 
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
         into 'conf'
@@ -49,6 +65,9 @@ task pack(type: Zip, dependsOn: 'jar') {
     }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
+        filter ReplaceTokens, tokens : ['app.version': project.version,
+                                        'libraries' : libraries,
+                                        'drivers' : drivers]
     }
     from(configurations.compile) {
         into 'libs'

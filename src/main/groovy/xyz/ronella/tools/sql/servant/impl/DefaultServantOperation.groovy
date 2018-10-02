@@ -27,7 +27,7 @@ class DefaultServantOperation implements IOperation {
             queries.each {query ->
                 def servantTask = new ServantOperationTask(config, qryConfig, query)
 
-                if (qryConfig.parallel) {
+                if (cliArgs.parallel || qryConfig.parallel) {
                     ParallelEngine.instance.with {
                         if (!isStarted()) {
                             start()
@@ -46,7 +46,7 @@ class DefaultServantOperation implements IOperation {
         if (qryConfig.next) {
             def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
 
-            if (qryConfig.parallel) {
+            if (cliArgs.parallel || qryConfig.parallel) {
                 futures.add(ParallelEngine.instance.process(nextTask))
             }
             else {
