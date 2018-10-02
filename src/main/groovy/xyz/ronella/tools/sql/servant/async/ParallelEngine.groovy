@@ -26,7 +26,7 @@ class ParallelEngine {
         minThreads = maxThreads
 
         if (maxThreads>1) {
-            minThreads = (maxThreads / 2) + 1
+            minThreads = maxThreads - 1 //Only use all threads if needed.
         }
     }
 
