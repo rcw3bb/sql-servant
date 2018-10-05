@@ -4,6 +4,7 @@ import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
+import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
@@ -15,12 +16,13 @@ class DefaultServantOperation implements IOperation {
     public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
 
     @Override
-    def perform(List<Future> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+    def perform(List<Future<IStatus>> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
         LOG.info "[${qryConfig.description}] Connection String: ${qryConfig.connectionString}"
         LOG.info "[${qryConfig.description}] Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
 
-        List<Future> localFutures = new ArrayList<>()
+        List<Future<IStatus>> localFutures = new ArrayList<>()
+        boolean continueNext = true
 
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
@@ -38,20 +40,23 @@ class DefaultServantOperation implements IOperation {
                     }
                 }
                 else {
-                    servantTask.run()
+                    continueNext = servantTask.call().isSuccessful() && continueNext
                 }
             }
         }
 
-        if (qryConfig.next) {
-            def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
-
-            if (cliArgs.parallel || qryConfig.parallel) {
-                futures.add(ParallelEngine.instance.process(nextTask))
+        if (continueNext) {
+            if (qryConfig.next) {
+                def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
+                if (cliArgs.parallel || qryConfig.parallel) {
+                    futures.add(ParallelEngine.instance.process(nextTask))
+                } else {
+                    nextTask.call()
+                }
             }
-            else {
-                nextTask.run()
-            }
+        }
+        else {
+            LOG.warn("[${qryConfig.description}] Premature exit")
         }
     }
 }

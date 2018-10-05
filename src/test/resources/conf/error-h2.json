@@ -1,0 +1,52 @@
+{"defaults": {
+  "jdbcDriver" : "org.h2.Driver",
+  "connectionString": "jdbc:h2:./src/test/db/test4"
+},
+  "dbPoolConfig" : {
+    "minIdle": 5,
+    "maxIdle": 10,
+    "maxOpenPreparedStatements" : 100
+  },
+  "queries": [
+    {
+      "queries": [
+        "insert into person (id, name) values (1, 'test1 name')"
+     ],
+      "next" : {
+        "queries" : ["CREATE TABLE PERSON(id int primary key, name varchar(255))"]
+      }
+    },
+    {
+      "queries": [
+        "CREATE TABLE PERSON2(id int primary key, name varchar(255))"
+      ],
+      "next" : {
+        "queries" : ["insert into person3 (id, name) values (1, 'test1 name')"],
+        "next" : {
+          "queries" : ["insert into person2 (id, name) values (2, 'test2 name')"]
+        }
+      }
+    },
+    {
+      "parallel" : true,
+      "queries": [
+        "insert into person3 (id, name) values (1, 'test1 name')"
+      ],
+      "next" : {
+        "queries" : ["CREATE TABLE PERSON3(id int primary key, name varchar(255))"]
+      }
+    },
+    {
+      "parallel" : true,
+      "queries": [
+        "CREATE TABLE PERSON4(id int primary key, name varchar(255))"
+      ],
+      "next" : {
+        "queries" : ["insert into person5 (id, name) values (1, 'test1 name')"],
+        "next" : {
+          "queries" : ["insert into person4 (id, name) values (2, 'test2 name')"]
+        }
+      }
+    }
+  ]
+}

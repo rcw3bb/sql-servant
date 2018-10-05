@@ -48,12 +48,12 @@ class QueryServant {
 
         if (configJson) {
             ParallelEngine.instance.with {
-                List<Future> futures = new ArrayList<>()
+                List<Future<IStatus>> futures = new ArrayList<>()
                 try {
                     configJson.queries.each { qryConfig ->
                         new OperationStrategy(args).runOperation(futures, config, qryConfig)
                     }
-                    Iterator<Future> iterator=futures.iterator()
+                    Iterator<Future<IStatus>> iterator=futures.iterator()
                     while (iterator.hasNext()) {
                         iterator.next().get()
                     }

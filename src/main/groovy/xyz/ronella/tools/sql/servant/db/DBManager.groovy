@@ -107,13 +107,13 @@ class DBManager {
                         }
                     }
                     finally {
-                        try {rs.close()} catch (Exception e) {LOG.warn(e.message)}
+                        try {rs.close()} catch (Exception e) {}
                     }
             }
         }
         finally {
-            try {stmt.close()} catch (Exception e) {LOG.warn(e.message)}
-            try {conn.close()} catch (Exception e) {LOG.warn(e.message)}
+            try {stmt.close()} catch (Exception e) {}
+            try {conn.close()} catch (Exception e) {}
         }
     }
 }

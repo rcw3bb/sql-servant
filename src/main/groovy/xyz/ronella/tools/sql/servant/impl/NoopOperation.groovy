@@ -4,6 +4,7 @@ import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
+import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
@@ -14,7 +15,7 @@ class NoopOperation implements IOperation {
     public final static def LOG = Logger.getLogger(NoopOperation.class.name)
 
     @Override
-    def perform(List<Future> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+    def perform(List<Future<IStatus>> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
         LOG.info "Connection String: ${qryConfig.connectionString}"
         LOG.info "Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"

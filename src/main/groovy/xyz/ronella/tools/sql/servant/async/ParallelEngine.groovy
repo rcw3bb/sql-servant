@@ -4,6 +4,7 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory
 import org.apache.log4j.Logger
 
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 import java.util.concurrent.ThreadPoolExecutor
@@ -76,7 +77,7 @@ class ParallelEngine {
         return this.isStarted
     }
 
-    Future process(Runnable task) {
+    public <TYPE_OBJECT> Future<TYPE_OBJECT> process(Callable<TYPE_OBJECT> task) {
         executor.submit task
     }
 }
