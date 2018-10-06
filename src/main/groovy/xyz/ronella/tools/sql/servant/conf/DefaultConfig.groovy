@@ -7,6 +7,7 @@ class DefaultConfig {
     String username
     String password
     String mode
+    Boolean windowsAuthentication
     Boolean parallel
 
 }

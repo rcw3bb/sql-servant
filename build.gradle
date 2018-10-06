@@ -50,25 +50,35 @@ processResources {
     }
 }
 
+String getLibs() {
+    configurations.compile.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%LIBS_DIR%\\${___file.name}"})
+}
+
+String getDrvs() {
+    configurations.drivers.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
+}
+
+String getDrvsMSSQL() {
+    configurations.mssql.inject(getDrvs(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
+}
+
 task pack(type: Zip, dependsOn: 'jar') {
     it.baseName = buildBaseName
     destinationDir = file(packDirPath)
 
-    String libraries = configurations.compile.inject(new String(), {___aggr, ___file ->
-        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%LIBS_DIR%\\${___file.name}"})
-
-    String drivers = configurations.drivers.inject(new String(), {___aggr, ___file ->
-        "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
-
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
         into 'conf'
-        include '*.json'
+        include 'ss-h2*.json'
     }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
         filter ReplaceTokens, tokens : ['app.version': project.version,
-                                        'libraries' : libraries,
-                                        'drivers' : drivers]
+                                        'libraries' : getLibs(),
+                                        'drivers' : getDrvs(),
+                                        'java.library.path' : '']
     }
     from(configurations.compile) {
         into 'libs'
@@ -81,3 +91,73 @@ task pack(type: Zip, dependsOn: 'jar') {
         into 'libs'
     }
 }
+
+task packMSSQLx64(type: Zip, dependsOn: 'jar') {
+    it.baseName = "${buildBaseName}-mssql-x86_64"
+    destinationDir = file(packDirPath)
+
+    from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
+        into 'conf'
+        include 'ss-*.json'
+    }
+    from(sourceSets.main.resources.srcDirs.first()) {
+        include '*.bat'
+        filter ReplaceTokens, tokens : ['app.version': project.version,
+                                        'libraries' : getLibs(),
+                                        'drivers' : getDrvsMSSQL(),
+                                        'java.library.path' : '-Djava.library.path=%DRVS_DIR%']
+    }
+    from(configurations.compile) {
+        into 'libs'
+    }
+    from(configurations.drivers) {
+        into 'drivers'
+    }
+    from(configurations.mssql) {
+        into 'drivers'
+    }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_6.0/x64")) {
+        include 'sql*.dll'
+        into 'drivers'
+    }
+    from(file("${buildDir}/libs")) {
+        include 'sql*.jar'
+        into 'libs'
+    }
+}
+
+task packMSSQLx86(type: Zip, dependsOn: 'jar') {
+    it.baseName = "${buildBaseName}-mssql-x86"
+    destinationDir = file(packDirPath)
+
+    from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
+        into 'conf'
+        include 'ss-*.json'
+    }
+    from(sourceSets.main.resources.srcDirs.first()) {
+        include '*.bat'
+        filter ReplaceTokens, tokens : ['app.version': project.version,
+                                        'libraries' : getLibs(),
+                                        'drivers' : getDrvsMSSQL(),
+                                        'java.library.path' : '-Djava.library.path=%DRVS_DIR%']
+    }
+    from(configurations.compile) {
+        into 'libs'
+    }
+    from(configurations.drivers) {
+        into 'drivers'
+    }
+    from(configurations.mssql) {
+        into 'drivers'
+    }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_6.0/x86")) {
+        include 'sql*.dll'
+        into 'drivers'
+    }
+    from(file("${buildDir}/libs")) {
+        include 'sql*.jar'
+        into 'libs'
+    }
+}
+
+task packAll(dependsOn: ['pack', 'packMSSQLx64', 'packMSSQLx86'])

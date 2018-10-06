@@ -10,6 +10,7 @@ class JsonConfigWrapper extends JsonConfig {
     private static final int DB_POOL_MAX_IDLE = 1
     private static final int DB_POOL_MAX_OPEN_PREPARED_STATEMENTS = 50
     private static final def DEFAULT_QUERY_DESCRIPTION = {___idx -> "Query ${___idx}"}
+    private static final String DB_MSSQL_DRIVER = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
 
     JsonConfigWrapper(JsonConfig jsonConfig) {
         this.jsonConfig = jsonConfig
@@ -23,11 +24,25 @@ class JsonConfigWrapper extends JsonConfig {
                     jdbcDriver: defaults.jdbcDriver,
                     connectionString: defaults.connectionString,
                     parallel: defaults.parallel?:false,
+                    windowsAuthentication: defaults.windowsAuthentication?:false,
                     username: defaults.username?:'',
                     password: defaults.password?:''
             )
+            processWindowsAuthentication(this.defaults)
         }
         this.defaults
+    }
+
+    private static void processWindowsAuthentication(DefaultConfig defaults) {
+        if (defaults.windowsAuthentication) {
+            String connectStr = defaults.connectionString
+            if (!connectStr.contains('integratedSecurity')) {
+                defaults.connectionString="${connectStr};integratedSecurity=true"
+            }
+            if (!defaults.jdbcDriver) {
+                defaults.jdbcDriver = DB_MSSQL_DRIVER
+            }
+        }
     }
 
     private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
@@ -38,8 +53,12 @@ class JsonConfigWrapper extends JsonConfig {
                 password: ___qryConfig.password ?: defaults.password,
                 mode: ___qryConfig.mode==null ? defaults.mode : ___qryConfig.mode,
                 parallel: ___qryConfig.parallel==null ? defaults.parallel : ___qryConfig.parallel,
+                windowsAuthentication: ___qryConfig.windowsAuthentication==null ? defaults.windowsAuthentication :
+                        ___qryConfig.windowsAuthentication,
                 description: description,
                 queries: ___qryConfig.queries ?: defaults.queries)
+
+        processWindowsAuthentication(newQueriesConfig)
 
         def nextConfig=___qryConfig.next
         newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig

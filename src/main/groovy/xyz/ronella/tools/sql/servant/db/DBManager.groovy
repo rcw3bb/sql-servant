@@ -40,7 +40,19 @@ class DBManager {
         return dbManager
     }
 
+    private void validate(QueriesConfig qryConfig) {
+        if (!qryConfig.jdbcDriver) {
+            throw new DBMissingValueException("jdbcDriver")
+        }
+
+        if (!qryConfig.connectionString) {
+            throw new DBMissingValueException("connectionString")
+        }
+    }
+
     DataSource getDataSource(QueriesConfig qryConfig) {
+        validate(qryConfig)
+
         def connectionString = qryConfig.connectionString
 
         def dataSource = DATA_SOURCES.get(connectionString)
@@ -55,8 +67,12 @@ class DBManager {
                     dataSource = new BasicDataSource()
 
                     dataSource.setUrl(connectionString)
-                    dataSource.setUsername(qryConfig.username)
-                    dataSource.setPassword(qryConfig.password)
+
+                    if (!qryConfig.windowsAuthentication) {
+                        dataSource.setUsername(qryConfig.username)
+                        dataSource.setPassword(qryConfig.password)
+                    }
+
                     dataSource.setMinIdle(dbPoolConfig.minIdle)
                     dataSource.setMaxIdle(dbPoolConfig.maxIdle)
                     dataSource.setMaxOpenPreparedStatements(dbPoolConfig.maxOpenPreparedStatements)

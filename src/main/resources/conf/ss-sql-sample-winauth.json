@@ -1,0 +1,19 @@
+{
+  "defaults": {
+    "connectionString": "jdbc:sqlserver://localhost:1434;databaseName=<YOUR_DB_NAME>",
+    "windowsAuthentication": true
+  },
+  "dbPoolConfig" : {
+    "minIdle": 5,
+    "maxIdle": 10,
+    "maxOpenPreparedStatements" : 100
+  },
+  "queries": [
+    {
+      "mode": "query",
+      "queries": [
+        "select * from <YOUR_TABLE_NAME>"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,7 @@ class QueriesConfigDefaultWrapper extends QueriesConfig {
                 password: defaultConfig.password,
                 mode: defaultConfig.mode,
                 parallel: defaultConfig.parallel,
+                windowsAuthentication: defaultConfig.windowsAuthentication,
                 queries: new String[0]
         )
     }
@@ -50,5 +51,9 @@ class QueriesConfigDefaultWrapper extends QueriesConfig {
 
     QueriesConfig getNext() {
         queriesConfig.next
+    }
+
+    Boolean getWindowsAuthentication() {
+        queriesConfig.windowsAuthentication
     }
 }
