@@ -16,11 +16,4 @@ class DBManagerException extends Exception {
     DBManagerException(String message) {
         super(message)
     }
-
-    /**
-     * Creates an instance of DBManagerException.
-     */
-    DBManagerException() {
-        super()
-    }
 }

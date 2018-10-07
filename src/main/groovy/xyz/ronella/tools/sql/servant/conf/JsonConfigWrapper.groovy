@@ -12,6 +12,7 @@ class JsonConfigWrapper extends JsonConfig {
     private DBPoolConfig dbPoolConfig
     private QueriesConfig[] queries
 
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase()
     private static final int DB_POOL_MIN_IDLE = 1
     private static final int DB_POOL_MAX_IDLE = 1
     private static final int DB_POOL_MAX_OPEN_PREPARED_STATEMENTS = 50
@@ -51,6 +52,11 @@ class JsonConfigWrapper extends JsonConfig {
 
     private static void processWindowsAuthentication(DefaultConfig defaults) {
         if (defaults.windowsAuthentication) {
+
+            if (!OS_NAME.contains('win')) {
+                throw new ConfigurationException("windowsAuthentication cannot be used in ${OS_NAME}")
+            }
+
             String connectStr = defaults.connectionString
             if (!connectStr.contains('integratedSecurity')) {
                 defaults.connectionString="${connectStr};integratedSecurity=true"
