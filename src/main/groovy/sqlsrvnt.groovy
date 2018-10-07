@@ -2,6 +2,15 @@ import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.QueryServant
 
+/**
+ * Processes the command line arguments to prepare the instance of CliArgs.
+ *
+ * @param cliArgs An instance of CliArgs to update.
+ * @param args An actual arguments received from the command line.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 void processArgs(final CliArgs cliArgs, String ... args) {
     final Properties properties = new Properties()
 

@@ -11,10 +11,24 @@ import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
 import java.util.concurrent.Future
 
+/**
+ * An implementation of IOperation that handles non-NOOP operation.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 class DefaultServantOperation implements IOperation {
 
     public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
 
+    /**
+     * The default logic to actually execute the configured queries.
+     *
+     * @param futures An instance of collected instances of typed Futures.
+     * @param config An instance of Config.
+     * @param qryConfig An instance QueriesConfig
+     * @param cliArgs An instance of CliArgs
+     */
     @Override
     def perform(List<Future<IStatus>> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         LOG.info "---[${qryConfig.description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"

@@ -11,6 +11,12 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 
+/**
+ * ParallelEngine is the one responsible to doing parallel tasks.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 class ParallelEngine {
 
     private final static ReentrantLock LOCK = new ReentrantLock()
@@ -31,6 +37,11 @@ class ParallelEngine {
         }
     }
 
+    /**
+     * Returns the singleton instance of ParallelEngine.
+     *
+     * @return An instance of ParallelEngine.
+     */
     static ParallelEngine getInstance() {
         if (INSTANCE==null) {
             try {
@@ -46,6 +57,9 @@ class ParallelEngine {
         INSTANCE
     }
 
+    /**
+     * Starts the ParallelEngine if not yet started.
+     */
     def start() {
         if (isStarted) {
             LOG.warn "Engine was already started"
@@ -61,6 +75,9 @@ class ParallelEngine {
         }
     }
 
+    /**
+     * Stops the ParallelEngine if it was started.
+     */
     def stop() {
         if (isStarted) {
             LOG.info "Stopping engine"
@@ -73,10 +90,21 @@ class ParallelEngine {
         }
     }
 
+    /**
+     * Checks if the ParallelEngine was started.
+     *
+     * @return true if started.
+     */
     boolean isStarted() {
         return this.isStarted
     }
 
+    /**
+     * The one responsible for sending tasks to the ParallelEngine.
+     *
+     * @param task An instance of typed Callable.
+     * @return An instance of typed Future.
+     */
     public <TYPE_OBJECT> Future<TYPE_OBJECT> process(Callable<TYPE_OBJECT> task) {
         executor.submit task
     }

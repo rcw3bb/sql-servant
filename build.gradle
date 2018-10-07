@@ -93,7 +93,7 @@ task pack(type: Zip, dependsOn: 'jar') {
 }
 
 task packMSSQLx64(type: Zip, dependsOn: 'jar') {
-    it.baseName = "${buildBaseName}-mssql-x86_64"
+    it.baseName = "${buildBaseName}-windows-x86_64"
     destinationDir = file(packDirPath)
 
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
@@ -127,7 +127,7 @@ task packMSSQLx64(type: Zip, dependsOn: 'jar') {
 }
 
 task packMSSQLx86(type: Zip, dependsOn: 'jar') {
-    it.baseName = "${buildBaseName}-mssql-x86"
+    it.baseName = "${buildBaseName}-windows-x86"
     destinationDir = file(packDirPath)
 
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {

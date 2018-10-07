@@ -1,5 +1,11 @@
 package xyz.ronella.tools.sql.servant.conf
 
+/**
+ * Makes the JSONConfig instance ready for use.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 class JsonConfigWrapper extends JsonConfig {
     private JsonConfig jsonConfig
     private DefaultConfig defaults
@@ -12,10 +18,20 @@ class JsonConfigWrapper extends JsonConfig {
     private static final def DEFAULT_QUERY_DESCRIPTION = {___idx -> "Query ${___idx}"}
     private static final String DB_MSSQL_DRIVER = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
 
+    /**
+     * Creates an instance of JsonConfigWrapper.
+     *
+     * @param jsonConfig An instance of JsonConfig to prepare.
+     */
     JsonConfigWrapper(JsonConfig jsonConfig) {
         this.jsonConfig = jsonConfig
     }
 
+    /**
+     * Get the prepared instance of DefaultConfig.
+     *
+     * @return An instance of DefaultConfig.
+     */
     DefaultConfig getDefaults() {
         if (!this.defaults) {
             def defaults = jsonConfig.defaults
@@ -67,6 +83,11 @@ class JsonConfigWrapper extends JsonConfig {
         return newQueriesConfig
     }
 
+    /**
+     * Get the prepared instances of QueriesConfig.
+     *
+     * @return An arrays of QueriesConfig.
+     */
     QueriesConfig[] getQueries() {
         if (!this.queries) {
             List<QueriesConfig> queries = new ArrayList<>()
@@ -79,6 +100,11 @@ class JsonConfigWrapper extends JsonConfig {
         this.queries
     }
 
+    /**
+     * Get the prepared instance of DBPoolConfig.
+     *
+     * @return An instance of DBPoolConfig.
+     */
     DBPoolConfig getDbPoolConfig() {
         if (!this.dbPoolConfig) {
             def dbPoolConfig = jsonConfig.dbPoolConfig

@@ -28,7 +28,6 @@ class QueryServantTest {
             testH2QueryServant.perform(new CliArgs())
         }
         finally {
-            Thread.sleep(500)
             eraseDB.call()
         }
     }
@@ -45,7 +44,6 @@ class QueryServantTest {
             testH2ErrorQueryServant.perform(new CliArgs())
         }
         finally {
-            Thread.sleep(500)
             eraseDB.call()
         }
     }

@@ -13,6 +13,12 @@ import java.sql.Statement
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
+/**
+ * The class that is responsible to the actual query processing.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 class DBManager {
     public final static def LOG = Logger.getLogger(DBManager.class.name)
 
@@ -25,6 +31,12 @@ class DBManager {
         this.dbPoolConfig = dbPoolConfig
     }
 
+    /**
+     * Returns the one and only instance of DBManager.
+     *
+     * @param dbPoolConfig An instance of DBPoolConfig.
+     * @return An instance of DBManager.
+     */
     static DBManager getInstance(DBPoolConfig dbPoolConfig) {
         if (!dbManager) {
             try {
@@ -50,6 +62,12 @@ class DBManager {
         }
     }
 
+    /**
+     * Retrieve a instance of DataSource from the pool.
+     *
+     * @param qryConfig An instance of QueriesConfig.
+     * @return An instance of DataSource.
+     */
     DataSource getDataSource(QueriesConfig qryConfig) {
         validate(qryConfig)
 
@@ -88,6 +106,12 @@ class DBManager {
         return dataSource
     }
 
+    /**
+     * The actual runner of the sql statement.
+     *
+     * @param qryConfig An instance of QueriesConfig.
+     * @param statement The actual sql statement to execute.
+     */
     def runStatement(QueriesConfig qryConfig, String statement) {
         def dataSource = getDataSource(qryConfig)
         Connection conn

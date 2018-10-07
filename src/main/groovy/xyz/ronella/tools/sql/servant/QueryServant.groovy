@@ -7,6 +7,12 @@ import java.util.concurrent.Future
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
+/**
+ * The main class to accepts the configuration to process.
+ *
+ * @author Ron Webb
+ * @since 2018-10-07
+ */
 class QueryServant {
 
     public final static def LOG = Logger.getLogger(QueryServant.class.name)
@@ -16,10 +22,20 @@ class QueryServant {
 
     private Config config
 
+    /**
+     * Creates an instance of QueryServant.
+     *
+     * @param config An instance of configuration to process.
+     */
     QueryServant(Config config) {
         this.config = config
     }
 
+    /**
+     * Increments the depth of the QueriesConfig since it can be nested.
+     * The usageLevel is being used for waiting all the threads to complete
+     * before shutting down the ParallelEngine.
+     */
     static void usageLevelUp() {
         try {
             LOCK.lock()
@@ -30,6 +46,11 @@ class QueryServant {
         }
     }
 
+    /**
+     * Decrements the depth of the QueriesConfig since it can be nested.
+     * The usageLevel is being used for waiting all the threads to complete
+     * before shutting down the ParallelEngine.
+     */
     static void usageLevelDown() {
         try {
             LOCK.lock()
@@ -40,6 +61,11 @@ class QueryServant {
         }
     }
 
+    /**
+     * The actual method the is doing the configuration processing.
+     *
+     * @param args An instance of CliArgs.
+     */
     def perform(CliArgs args) {
         LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
         LOG.info "Configuration: ${config.configFilename}"
