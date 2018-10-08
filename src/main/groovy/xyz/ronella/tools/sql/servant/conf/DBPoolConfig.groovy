@@ -9,7 +9,7 @@ package xyz.ronella.tools.sql.servant.conf
 class DBPoolConfig {
 
     /**
-     * The maximum number of DataSource instances that are always ready to create a
+     * The minimum number of DataSource instances that are always ready to create a
      * connection.
      */
     Integer minIdle
@@ -20,8 +20,7 @@ class DBPoolConfig {
     Integer maxIdle
 
     /**
-     * The maximum number of PreparedStatement instances that will be fed to one of the
-     * DataSource instance.
+     * The maximum number of PreparedStatement instances before blocking.
      */
     Integer maxOpenPreparedStatements
 }
