@@ -22,4 +22,9 @@ class CliArgs {
      * Holds the configuration file to use.
      */
     String config
+
+    /**
+     * Holds the environment associated to the configuration.
+     */
+    String environment
 }

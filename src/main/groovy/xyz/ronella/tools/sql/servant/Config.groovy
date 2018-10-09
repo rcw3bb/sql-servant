@@ -54,6 +54,16 @@ class Config {
         new File(this.filename).getAbsolutePath()
     }
 
+    /**
+     * Returns the configuration directory that is being used.
+     *
+     * @return The directory of the configuration being used.
+     * @since 1.2.0
+     */
+    String getConfigDirectory() {
+        new File(this.confDir).getAbsolutePath()
+    }
+
     private String getConfigAsString() {
         File file = new File(this.filename)
         if (file.exists() && file.canRead()) {

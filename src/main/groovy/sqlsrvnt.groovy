@@ -1,5 +1,6 @@
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.ConfigByEnv
 import xyz.ronella.tools.sql.servant.QueryServant
 
 /**
@@ -32,6 +33,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         p longOpt : 'parallel', 'Run the actual gathering in parallel'
         c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
         v longOpt : 'version', 'Shows the current version'
+        e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
     }
 
     def options = cli.parse(args)
@@ -41,7 +43,8 @@ void processArgs(final CliArgs cliArgs, String ... args) {
 
     def optionsLogic = [{options.n} : {cliArgs.noop = true},
                         {options.p} : {cliArgs.parallel = true},
-                        {options.c} : {cliArgs.config = options.c}
+                        {options.c} : {cliArgs.config = options.c},
+                        {options.e} : {cliArgs.environment = options.e}
     ]
 
     if (options.h) {
@@ -50,7 +53,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
     else if (options.v) {
         String version = properties.getProperty('version', '')
         String year = properties.getProperty('year', '2018')
-        println "SQL Servant ${version} by Ron [${year}]"
+        println "SQL Servant ${version} [${year}]"
     }
     else {
         optionsLogic.each {___key , ___value ->
@@ -58,7 +61,9 @@ void processArgs(final CliArgs cliArgs, String ... args) {
                 ___value()
             }
         }
-        new QueryServant(new Config(cliArgs.config)).perform(cliArgs)
+
+        def config = new ConfigByEnv(new Config(cliArgs.config)).createConfigByEnv(cliArgs)
+        new QueryServant(config).perform(cliArgs)
     }
 }
 
