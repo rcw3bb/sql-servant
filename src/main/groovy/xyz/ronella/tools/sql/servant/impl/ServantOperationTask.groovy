@@ -3,6 +3,7 @@ package xyz.ronella.tools.sql.servant.impl
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.parser.QueryParserStrategy
 import xyz.ronella.tools.sql.servant.QueryServant
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.DBManager
@@ -54,7 +55,11 @@ class ServantOperationTask implements Callable<IStatus> {
         boolean isSuccessful = false
         def startTime = new Date().time
         try {
-            DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, query)
+            String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("[${qryConfig.description}] Parsed Query: ${parsedQuery}")
+            }
+            DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, parsedQuery)
             LOG.info("[${qryConfig.description}] Success running: ${query}")
             isSuccessful = true
         }

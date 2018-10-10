@@ -13,7 +13,11 @@
         "CREATE TABLE PERSON(id int primary key, name varchar(255))",
         "insert into person (id, name) values (1, 'test1 name')",
         "insert into person (id, name) values (2, 'test2 name')"
-      ]
+      ],
+      "next" : {
+        "mode" : "script",
+        "queries" : ["sample-h2-script.txt"]
+      }
     },
     {
       "queries" : ["select * from person"],

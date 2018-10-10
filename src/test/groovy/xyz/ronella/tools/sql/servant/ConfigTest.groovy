@@ -57,4 +57,10 @@ class ConfigTest {
         assert 'Query 3 [NEXT] [NEXT]'==testDefaultConfig.configAsJson.queries[2].next.next.description
     }
 
+    @Test
+    void testScriptDirectory() {
+        String expected = new File("${testDefaultConfig.configDirectory}/../scripts").absolutePath
+        assert expected == testDefaultConfig.scriptDirectory
+    }
+
 }

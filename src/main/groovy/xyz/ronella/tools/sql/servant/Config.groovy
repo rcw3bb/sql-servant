@@ -64,6 +64,16 @@ class Config {
         new File(this.confDir).getAbsolutePath()
     }
 
+    /**
+     * Returns the query scripts directory.
+     *
+     * @return The directory of the query scripts.
+     * @since 1.2.0
+     */
+    String getScriptDirectory() {
+        new File("${this.confDir}/../scripts").getAbsolutePath()
+    }
+
     private String getConfigAsString() {
         File file = new File(this.filename)
         if (file.exists() && file.canRead()) {

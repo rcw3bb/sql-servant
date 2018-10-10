@@ -29,8 +29,14 @@ class QueryModeWrapper {
             case 'stmt':
                 QueryMode.STATEMENT
                 break
-            default:
+            case 'query':
                 QueryMode.QUERY
+                break
+            case 'script':
+                QueryMode.SCRIPT
+                break
+            default:
+                throw new QueryModeException("Mode=${this.mode}")
         }
     }
 }

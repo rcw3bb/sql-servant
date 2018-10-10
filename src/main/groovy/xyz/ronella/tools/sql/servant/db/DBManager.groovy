@@ -121,11 +121,7 @@ class DBManager {
             stmt = conn.prepareStatement(statement)
 
             switch (new QueryModeWrapper(qryConfig.mode).mode) {
-                case QueryMode.STATEMENT:
-                    stmt.execute()
-                    break
                 case QueryMode.QUERY:
-                default:
                     ResultSet rs = stmt.executeQuery()
                     def metaData = rs.metaData
                     try {
@@ -149,6 +145,10 @@ class DBManager {
                     finally {
                         try {rs.close()} catch (Exception e) {}
                     }
+                    break
+                default:
+                    stmt.execute()
+                    break
             }
         }
         finally {
