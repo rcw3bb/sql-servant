@@ -1,0 +1,7 @@
+insert into person (id, name) values (3, 'test3 name');
+
+insert into person (id, name) values (4, 'test4 name');
+
+insert into person (id, name) values (5, 'test5 name');
+
+insert into person (id, name) values (6, 'test6 name');

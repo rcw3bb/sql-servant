@@ -73,6 +73,10 @@ task pack(type: Zip, dependsOn: 'jar') {
         into 'conf'
         include 'ss-h2*.json'
     }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/scripts")) {
+        into 'scripts'
+        include '*.*'
+    }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
         filter ReplaceTokens, tokens : ['app.version': project.version,
@@ -99,6 +103,10 @@ task packMSSQLx64(type: Zip, dependsOn: 'jar') {
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
         into 'conf'
         include 'ss-*.json'
+    }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/scripts")) {
+        into 'scripts'
+        include '*.*'
     }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
@@ -133,6 +141,10 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
     from(file("${sourceSets.main.resources.srcDirs.first()}/conf")) {
         into 'conf'
         include 'ss-*.json'
+    }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/scripts")) {
+        into 'scripts'
+        include '*.*'
     }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
