@@ -2,6 +2,7 @@ package xyz.ronella.tools.sql.servant.db
 
 import org.apache.commons.dbcp2.BasicDataSource
 import org.apache.log4j.Logger
+import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
 import xyz.ronella.tools.sql.servant.conf.DBPoolConfig
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
@@ -9,7 +10,6 @@ import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.Statement
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
@@ -126,6 +126,12 @@ class DBManager {
                     def metaData = rs.metaData
                     try {
                         def firstLoad = true
+                        def listeners = qryConfig.listeners
+                        def runCmd = {String ___cmd, String ___description, String ___query, String ___params ->
+                            new ListenerInvoker(qryConfig).invokeDataListener(___cmd, ___description,
+                                    ___query, ___params)
+                        }
+
                         while (rs.next()) {
                             StringBuilder sbHdr = new StringBuilder()
                             StringBuilder sbRec = new StringBuilder()
@@ -136,9 +142,20 @@ class DBManager {
                                 }
                             }
                             if (firstLoad) {
-                                LOG.info("[${qryConfig.description}] [HDR]: ${sbHdr.toString()}")
+                                def rawHdr = sbHdr.toString()
+                                LOG.info("[${qryConfig.description}] [HDR]: ${rawHdr}")
+
+                                if (listeners.onHeader) {
+                                    runCmd(listeners.onHeader, qryConfig.description, statement, rawHdr)
+                                }
                             }
-                            LOG.info("[${qryConfig.description}] [REC]: ${sbRec.toString()}")
+                            def rawData = sbRec.toString()
+                            LOG.info("[${qryConfig.description}] [REC]: ${rawData}")
+
+                            if (listeners.onData) {
+                                runCmd(listeners.onData, qryConfig.description, statement, rawData)
+                            }
+
                             firstLoad = false
                         }
                     }

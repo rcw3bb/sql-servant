@@ -1,6 +1,12 @@
 {"defaults": {
     "jdbcDriver" : "org.h2.Driver",
-    "connectionString": "jdbc:h2:./src/test/db/test1"
+    "connectionString": "jdbc:h2:./src/test/db/test1",
+    "listeners": {
+      "onStart" : "sample-h2-start.bat",
+      "onHeader" : "sample-h2-data.bat",
+      "onData" : "sample-h2-data.bat",
+      "onComplete": "sample-h2-complete.bat"
+    }
   },
   "dbPoolConfig" : {
     "minIdle": 5,

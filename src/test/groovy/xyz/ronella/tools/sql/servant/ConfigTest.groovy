@@ -4,6 +4,8 @@ import org.junit.Test
 
 class ConfigTest {
 
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase()
+
     final def testDefaultConfig = new Config('./src/test/resources/conf','ss-default')
     final def testEmptyDefaultConfig = new Config('./src/test/resources/conf','empty')
 
@@ -43,6 +45,11 @@ class ConfigTest {
     }
 
     @Test
+    void testEmptyConfigDefaultListeners() {
+        assert testEmptyDefaultConfig.configAsJson.defaults.listeners
+    }
+
+    @Test
     void testDefaultConfigNextQuery() {
         1==testDefaultConfig.configAsJson.queries[2].next.queries.length
     }
@@ -61,6 +68,19 @@ class ConfigTest {
     void testScriptDirectory() {
         String expected = new File("${testDefaultConfig.configDirectory}/../scripts").absolutePath
         assert expected == testDefaultConfig.scriptDirectory
+    }
+
+    @Test
+    void testListenersDirectory() {
+        String expected = new File("${testDefaultConfig.configDirectory}/../listeners").absolutePath
+        assert expected == testDefaultConfig.listenerDirectory
+    }
+
+    @Test
+    void testListenersWindowsCommand() {
+        if (OS_NAME.contains('win')) {
+            assert 'cmd /c' == testDefaultConfig.configAsJson.defaults.listeners.command
+        }
     }
 
 }

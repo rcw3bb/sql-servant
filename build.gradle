@@ -77,8 +77,13 @@ task pack(type: Zip, dependsOn: 'jar') {
         into 'scripts'
         include '*.*'
     }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/listeners")) {
+        into 'listeners'
+        include '*.*'
+    }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
+        include 'log4j.*'
         filter ReplaceTokens, tokens : ['app.version': project.version,
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvs(),
@@ -108,8 +113,13 @@ task packMSSQLx64(type: Zip, dependsOn: 'jar') {
         into 'scripts'
         include '*.*'
     }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/listeners")) {
+        into 'listeners'
+        include '*.*'
+    }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
+        include 'log4j.*'
         filter ReplaceTokens, tokens : ['app.version': project.version,
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvsMSSQL(),
@@ -146,8 +156,13 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
         into 'scripts'
         include '*.*'
     }
+    from(file("${sourceSets.main.resources.srcDirs.first()}/listeners")) {
+        into 'listeners'
+        include '*.*'
+    }
     from(sourceSets.main.resources.srcDirs.first()) {
         include '*.bat'
+        include 'log4j.*'
         filter ReplaceTokens, tokens : ['app.version': project.version,
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvsMSSQL(),

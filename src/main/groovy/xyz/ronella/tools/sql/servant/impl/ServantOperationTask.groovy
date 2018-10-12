@@ -3,6 +3,7 @@ package xyz.ronella.tools.sql.servant.impl
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
 import xyz.ronella.tools.sql.servant.parser.QueryParserStrategy
 import xyz.ronella.tools.sql.servant.QueryServant
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
@@ -51,24 +52,41 @@ class ServantOperationTask implements Callable<IStatus> {
      */
     @Override
     IStatus call() {
-        LOG.info("[${qryConfig.description}] Executing: ${query}")
+        def description = qryConfig.description
+        def listeners = qryConfig.listeners
+
+        def invokeComplete = {String ___description, String ___query, String ___success ->
+            if (listeners.onComplete) {
+                new ListenerInvoker(qryConfig).invokeCompleteListener(listeners.onComplete, ___description,
+                        ___query, ___success)
+            }
+        }
+
+        LOG.info("[${description}] Executing: ${query}")
+
+        if (listeners.onStart) {
+            new ListenerInvoker(qryConfig).invokeStartListener(listeners.onStart, description, query)
+        }
+
         boolean isSuccessful = false
         def startTime = new Date().time
         try {
             String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
             if (LOG.isDebugEnabled()) {
-                LOG.debug("[${qryConfig.description}] Parsed Query: ${parsedQuery}")
+                LOG.debug("[${description}] Parsed Query: ${parsedQuery}")
             }
             DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, parsedQuery)
-            LOG.info("[${qryConfig.description}] Success running: ${query}")
+            LOG.info("[${description}] Success running: ${query}")
+            invokeComplete(description, query, 'success')
             isSuccessful = true
         }
         catch(Exception e) {
             LOG.error(e.fillInStackTrace())
-            LOG.info("[${qryConfig.description}] Failed running: ${query}")
+            LOG.info("[${description}] Failed running: ${query}")
+            invokeComplete(description, query, 'failed')
         }
         finally {
-            LOG.info("[${qryConfig.description}] Elapse: [${new Date().time - startTime}ms]")
+            LOG.info("[${description}] Elapse: [${new Date().time - startTime}ms]")
             QueryServant.usageLevelDown()
         }
 

@@ -1,5 +1,8 @@
 package xyz.ronella.tools.sql.servant.conf
 
+import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.listener.ListenerException
+
 /**
  * Makes the JSONConfig instance ready for use.
  *
@@ -7,6 +10,7 @@ package xyz.ronella.tools.sql.servant.conf
  * @since 2018-10-07
  */
 class JsonConfigWrapper extends JsonConfig {
+    private Config config
     private JsonConfig jsonConfig
     private DefaultConfig defaults
     private DBPoolConfig dbPoolConfig
@@ -22,9 +26,11 @@ class JsonConfigWrapper extends JsonConfig {
     /**
      * Creates an instance of JsonConfigWrapper.
      *
+     * @param config An instance of the Config.
      * @param jsonConfig An instance of JsonConfig to prepare.
      */
-    JsonConfigWrapper(JsonConfig jsonConfig) {
+    JsonConfigWrapper(Config config, JsonConfig jsonConfig) {
+        this.config = config
         this.jsonConfig = jsonConfig
     }
 
@@ -43,17 +49,50 @@ class JsonConfigWrapper extends JsonConfig {
                     parallel: defaults.parallel?:false,
                     windowsAuthentication: defaults.windowsAuthentication?:false,
                     username: defaults.username?:'',
-                    password: defaults.password?:''
+                    password: defaults.password?:'',
+                    listeners: defaults.listeners?:new ListenersConfig()
             )
+
+            if (isWindows()) {
+                this.defaults.listeners.command = 'cmd.exe /c'
+            }
+
+            initListeners(this.defaults.listeners)
+
             processWindowsAuthentication(this.defaults)
         }
         this.defaults
     }
 
+    private void initListeners(ListenersConfig listenersConfig) {
+        def listenerDirectory = config.listenerDirectory
+
+        listenersConfig.with {
+            def listeners = ['onStart', 'onHeader', 'onData', 'onComplete']
+            listeners.each {
+                String listener = listenersConfig[it]
+                if (listener) {
+                    if (!(new File(listener).exists())) {
+                        def actualListenerFile = new File("${listenerDirectory}${File.separator}${listener}")
+                        if (actualListenerFile.exists()) {
+                            listenersConfig[it] = actualListenerFile.absolutePath
+                        } else {
+                            throw new ListenerException("${actualListenerFile} doesn't exists")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isWindows() {
+        OS_NAME.contains('win')
+    }
+
     private static void processWindowsAuthentication(DefaultConfig defaults) {
         if (defaults.windowsAuthentication) {
 
-            if (!OS_NAME.contains('win')) {
+            if (!isWindows()) {
                 throw new ConfigurationException("windowsAuthentication cannot be used in ${OS_NAME}")
             }
 
@@ -78,9 +117,23 @@ class JsonConfigWrapper extends JsonConfig {
                 windowsAuthentication: ___qryConfig.windowsAuthentication==null ? defaults.windowsAuthentication :
                         ___qryConfig.windowsAuthentication,
                 description: description,
-                queries: ___qryConfig.queries ?: defaults.queries)
+                queries: ___qryConfig.queries ?: defaults.queries,
+                listeners: ___qryConfig.listeners ?: defaults.listeners)
 
         processWindowsAuthentication(newQueriesConfig)
+
+        def defListeners = defaults.listeners
+        def newListeners = newQueriesConfig.listeners
+
+        newListeners.with {
+            command = command ?: defListeners.command
+            onStart = onStart ?: defListeners.onStart
+            onHeader = onHeader ?: defListeners.onHeader
+            onData = onData ?: defListeners.onData
+            onComplete = onComplete ?: defListeners.onComplete
+        }
+
+        initListeners(newListeners)
 
         def nextConfig=___qryConfig.next
         newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig

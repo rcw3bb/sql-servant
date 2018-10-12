@@ -74,6 +74,16 @@ class Config {
         new File("${this.confDir}/../scripts").getAbsolutePath()
     }
 
+    /**
+     * Returns the listener implementations directory.
+     *
+     * @return The directory of the listener implementations.
+     * @since 1.2.0
+     */
+    String getListenerDirectory() {
+        new File("${this.confDir}/../listeners").getAbsolutePath()
+    }
+
     private String getConfigAsString() {
         File file = new File(this.filename)
         if (file.exists() && file.canRead()) {
@@ -92,7 +102,7 @@ class Config {
     JsonConfig getConfigAsJson() {
         def jsonStr = this.configAsString
         if (jsonStr) {
-            new JsonConfigWrapper(new Gson().fromJson(jsonStr, JsonConfig.class))
+            new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
         }
         else {
             null

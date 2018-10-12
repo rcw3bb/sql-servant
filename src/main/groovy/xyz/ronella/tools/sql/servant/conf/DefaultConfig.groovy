@@ -45,4 +45,11 @@ class DefaultConfig {
      */
     Boolean parallel
 
+    /**
+     * Holds the configured listeners
+     *
+     * @since 1.2.0
+     */
+    ListenersConfig listeners
+
 }
