@@ -4,4 +4,4 @@ out/
 logs/
 src/test/db/
 build/
-ronella-sql-servant.iml
+*.iml

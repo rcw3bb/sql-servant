@@ -6,6 +6,7 @@ import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 class ListenerInvoker {
 
     public final static def LOG = Logger.getLogger(ListenerInvoker.class.name)
+    private final static String DEFAULT_FILTER_REPLACEMENT = '_'
 
     private QueriesConfig qryConfig
 
@@ -15,6 +16,10 @@ class ListenerInvoker {
 
     private static String getDateArg() {
         new Date().format('dd-MM-yyyy')
+    }
+
+    private String getFilter() {
+        qryConfig.listeners.filter
     }
 
     private String getCommand() {
@@ -36,9 +41,15 @@ class ListenerInvoker {
         }
     }
 
+    private String applyFilter(String data) {
+        filter.inject(data, { String ___result, String ___item ->
+            ___result.replaceAll(___item, DEFAULT_FILTER_REPLACEMENT)
+        })
+    }
+
     void invokeStartListener(String cmd, String description, String query) {
         if (command) {
-            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${description}\" \"${query}\"\""
+            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\"\""
             LOG.debug("[${qryConfig.description}] ${cmdToRun}")
             runCommand(cmdToRun)
         }
@@ -48,11 +59,11 @@ class ListenerInvoker {
         String args = params.split(',').inject(new StringBuilder(),
                 {___output, param ->
                     ___output.append(___output.length()>0?' ':'')
-                    ___output.append('\"').append(param).append('\"')
+                    ___output.append('\"').append(applyFilter(param)).append('\"')
                 }).toString()
 
         if (command) {
-            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${description}\" \"${query}\" ${args}\""
+            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\" ${args}\""
             LOG.debug("[${qryConfig.description}] ${cmdToRun}")
             runCommand(cmdToRun)
         }
@@ -60,7 +71,7 @@ class ListenerInvoker {
 
     void invokeCompleteListener(String cmd, String description, String query, String success) {
         if (command) {
-            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${description}\" \"${query}\" \"${success}\"\""
+            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\" \"${success}\"\""
             LOG.debug("[${qryConfig.description}] ${cmdToRun}")
             runCommand(cmdToRun)
         }

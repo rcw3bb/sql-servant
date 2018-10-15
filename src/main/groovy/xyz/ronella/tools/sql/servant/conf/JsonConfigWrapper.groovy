@@ -22,6 +22,7 @@ class JsonConfigWrapper extends JsonConfig {
     private static final int DB_POOL_MAX_OPEN_PREPARED_STATEMENTS = 50
     private static final def DEFAULT_QUERY_DESCRIPTION = {___idx -> "Query ${___idx}"}
     private static final String DB_MSSQL_DRIVER = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
+    private static final String DEFAULT_LISTENER_FILTER = '\"%'
 
     /**
      * Creates an instance of JsonConfigWrapper.
@@ -68,6 +69,7 @@ class JsonConfigWrapper extends JsonConfig {
         def listenerDirectory = config.listenerDirectory
 
         listenersConfig.with {
+            filter = filter?:DEFAULT_LISTENER_FILTER
             def listeners = ['onStart', 'onHeader', 'onData', 'onComplete']
             listeners.each {
                 String listener = listenersConfig[it]
@@ -131,6 +133,7 @@ class JsonConfigWrapper extends JsonConfig {
             onHeader = onHeader ?: defListeners.onHeader
             onData = onData ?: defListeners.onData
             onComplete = onComplete ?: defListeners.onComplete
+            filter = filter ?: defListeners.filter
         }
 
         initListeners(newListeners)
