@@ -31,7 +31,7 @@ class ListenerInvoker {
 
             LOG.debug(output)
             if (error.length() > 0) {
-                LOG.error(error)
+                throw new ListenerException("Failed to execute: ${cmd}")
             }
         }
     }
