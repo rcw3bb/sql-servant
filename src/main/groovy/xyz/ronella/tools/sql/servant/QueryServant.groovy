@@ -72,6 +72,9 @@ class QueryServant {
             LOG.info "Environment: ${args.environment}"
         }
         LOG.info "Configuration: ${config.configFilename}"
+        if (args.params) {
+            LOG.info "Parameters: ${args.params}"
+        }
 
         def configJson = config.configAsJson
 

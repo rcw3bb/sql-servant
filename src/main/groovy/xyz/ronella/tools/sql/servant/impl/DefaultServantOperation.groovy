@@ -21,6 +21,17 @@ class DefaultServantOperation implements IOperation {
 
     public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
 
+    private static String applyParams(final Map<String, String> params, final String query) {
+        String newQuery = query
+        if (params) {
+            params.forEach { ___key, ___value ->
+                String paramName = "%%%${___key}%%%"
+                newQuery = query.replaceAll(paramName, ___value)
+            }
+        }
+        newQuery
+    }
+
     /**
      * The default logic to actually execute the configured queries.
      *
@@ -41,7 +52,10 @@ class DefaultServantOperation implements IOperation {
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
             queries.each {query ->
-                def servantTask = new ServantOperationTask(config, qryConfig, query)
+
+                def updatedQuery = applyParams(cliArgs.params, query)
+
+                def servantTask = new ServantOperationTask(config, qryConfig, updatedQuery)
 
                 if (cliArgs.parallel || qryConfig.parallel) {
                     ParallelEngine.instance.with {

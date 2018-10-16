@@ -34,6 +34,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
         v longOpt : 'version', 'Shows the current version'
         e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
+        P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to parameters found in the configuration')
     }
 
     def options = cli.parse(args)
@@ -44,7 +45,16 @@ void processArgs(final CliArgs cliArgs, String ... args) {
     def optionsLogic = [{options.n} : {cliArgs.noop = true},
                         {options.p} : {cliArgs.parallel = true},
                         {options.c} : {cliArgs.config = options.c},
-                        {options.e} : {cliArgs.environment = options.e}
+                        {options.e} : {cliArgs.environment = options.e},
+                        {options.P} : {
+                            int idx = 0
+                            cliArgs.params = options.Ps.inject([:], {___result, ___item ->
+                                if (++idx % 2 == 0) {
+                                    ___result.put(options.Ps.get(idx-2), ___item)
+                                }
+                                ___result
+                            })
+                        }
     ]
 
     if (options.h) {

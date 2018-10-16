@@ -25,7 +25,7 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2QueryServant.perform(new CliArgs())
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%']))
         }
         finally {
             eraseDB.call()

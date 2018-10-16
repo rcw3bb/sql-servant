@@ -27,7 +27,7 @@
       }
     },
     {
-      "queries" : ["select * from person where name like '%name'"],
+      "queries" : ["select * from person where name like '%%%%name%%%'"],
       "mode" : "query"
     },
     {

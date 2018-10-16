@@ -25,6 +25,15 @@ class CliArgs {
 
     /**
      * Holds the environment associated to the configuration.
+     *
+     * @since 1.2.0
      */
     String environment
+
+    /**
+     * Holds the parameters to be used with configuration.
+     *
+     * @since 1.2.0
+     */
+    Map<String, String> params
 }
