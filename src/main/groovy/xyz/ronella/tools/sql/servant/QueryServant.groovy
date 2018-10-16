@@ -68,6 +68,9 @@ class QueryServant {
      */
     def perform(CliArgs args) {
         LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
+        if (args.environment) {
+            LOG.info "Environment: ${args.environment}"
+        }
         LOG.info "Configuration: ${config.configFilename}"
 
         def configJson = config.configAsJson
