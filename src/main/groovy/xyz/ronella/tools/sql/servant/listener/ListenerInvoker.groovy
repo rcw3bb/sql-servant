@@ -47,9 +47,9 @@ class ListenerInvoker {
         })
     }
 
-    void invokeStartListener(String cmd, String description, String query) {
+    void invokeStartListener(String cmd, String description, String query, boolean firstTime) {
         if (command) {
-            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\"\""
+            def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\" \"${firstTime}\"\""
             LOG.debug("[${qryConfig.description}] ${cmdToRun}")
             runCommand(cmdToRun)
         }

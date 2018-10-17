@@ -3,6 +3,8 @@ package xyz.ronella.tools.sql.servant.impl
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.Validate
+import xyz.ronella.tools.sql.servant.async.ProcessedHolder
 import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
 import xyz.ronella.tools.sql.servant.parser.QueryParserStrategy
 import xyz.ronella.tools.sql.servant.QueryServant
@@ -10,6 +12,7 @@ import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.DBManager
 
 import java.util.concurrent.Callable
+import java.util.function.Predicate
 
 /**
  * An implementation of Callable that processes the first configured queries.
@@ -64,8 +67,10 @@ class ServantOperationTask implements Callable<IStatus> {
 
         LOG.info("[${description}] Executing: ${query}")
 
+        def isProcessed = new ProcessedHolder().isProcessed(description)
+
         if (listeners.onStart) {
-            new ListenerInvoker(qryConfig).invokeStartListener(listeners.onStart, description, query)
+            new ListenerInvoker(qryConfig).invokeStartListener(listeners.onStart, description, query, !isProcessed)
         }
 
         boolean isSuccessful = false
@@ -75,6 +80,12 @@ class ServantOperationTask implements Callable<IStatus> {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("[${description}] Parsed Query: ${parsedQuery}")
             }
+            
+            /*TODO: To be completed.
+            if (new Validate(new ParamManager()).check(parsedQuery)) {
+                throw new UnresolvedParameterException(parsedQuery)
+            }*/
+
             DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, parsedQuery)
             LOG.info("[${description}] Success running: ${query}")
             invokeComplete(description, query, 'success')

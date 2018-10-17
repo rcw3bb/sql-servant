@@ -42,7 +42,7 @@ class JsonConfigWrapper extends JsonConfig {
      */
     DefaultConfig getDefaults() {
         if (!this.defaults) {
-            def defaults = jsonConfig.defaults
+            def defaults = jsonConfig.defaults?:new DefaultConfig()
             this.defaults = new DefaultConfig(
                     mode: defaults.mode?:'stmt',
                     jdbcDriver: defaults.jdbcDriver,

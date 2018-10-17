@@ -1,6 +1,8 @@
 package xyz.ronella.tools.sql.servant
 
 import org.junit.Test
+import xyz.ronella.tools.sql.servant.db.QueryMode
+import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 
 class ConfigTest {
 
@@ -8,6 +10,7 @@ class ConfigTest {
 
     final def testDefaultConfig = new Config('./src/test/resources/conf','ss-default')
     final def testEmptyDefaultConfig = new Config('./src/test/resources/conf','empty')
+    final def testReallyEmptyDefConfig = new Config('./src/test/resources/conf','really-empty')
 
     @Test
     void testDefaultConfig() {
@@ -79,8 +82,24 @@ class ConfigTest {
     @Test
     void testListenersWindowsCommand() {
         if (OS_NAME.contains('win')) {
-            assert 'cmd /c' == testDefaultConfig.configAsJson.defaults.listeners.command
+            assert 'cmd.exe /c' == testDefaultConfig.configAsJson.defaults.listeners.command
         }
     }
+
+    @Test
+    void testReallyDefaultEmptyMode() {
+        assert QueryMode.STATEMENT == new QueryModeWrapper(testReallyEmptyDefConfig.configAsJson.defaults.mode).getMode()
+    }
+
+    @Test
+    void testReallyEmptyDBMaxIdle() {
+        assert 1 == testReallyEmptyDefConfig.configAsJson.dbPoolConfig.maxIdle
+    }
+
+    @Test
+    void testReallyEmptyQueriesCount() {
+        assert 0 == testReallyEmptyDefConfig.configAsJson.queries.size()
+    }
+
 
 }

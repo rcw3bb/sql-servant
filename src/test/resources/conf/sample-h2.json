@@ -1,13 +1,6 @@
 {"defaults": {
     "jdbcDriver" : "org.h2.Driver",
-    "connectionString": "jdbc:h2:./src/test/db/test1",
-    "listeners": {
-      "filter" : "\"",
-      "onStart" : "sample-h2-start.bat",
-      "onHeader" : "sample-h2-data.bat",
-      "onData" : "sample-h2-data.bat",
-      "onComplete": "sample-h2-complete.bat"
-    }
+    "connectionString": "jdbc:h2:./src/test/db/test1"
   },
   "dbPoolConfig" : {
     "minIdle": 5,
@@ -46,6 +39,13 @@
       "parallel" : true
     },
     {
+      "listeners": {
+        "filter" : "\"",
+        "onStart" : "sample-h2-start.bat",
+        "onHeader" : "sample-h2-data.bat",
+        "onData" : "sample-h2-data.bat",
+        "onComplete": "sample-h2-complete.bat"
+      },
       "queries": ["CREATE TABLE PERSON(id int primary key, name varchar(255))"],
       "next" : {
         "queries": [
@@ -57,8 +57,7 @@
           "mode" : "query"
         }
       },
-      "connectionString": "jdbc:h2:./src/test/db/test3",
-      "parallel" : true
+      "connectionString": "jdbc:h2:./src/test/db/test3"
     }
   ]
 }
