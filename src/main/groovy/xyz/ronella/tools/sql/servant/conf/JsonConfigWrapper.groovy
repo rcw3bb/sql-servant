@@ -1,5 +1,6 @@
 package xyz.ronella.tools.sql.servant.conf
 
+import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.listener.ListenerException
 
@@ -15,6 +16,8 @@ class JsonConfigWrapper extends JsonConfig {
     private DefaultConfig defaults
     private DBPoolConfig dbPoolConfig
     private QueriesConfig[] queries
+
+    public final static def LOG = Logger.getLogger(JsonConfigWrapper.class.name)
 
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase()
     private static final int DB_POOL_MIN_IDLE = 1
@@ -134,6 +137,16 @@ class JsonConfigWrapper extends JsonConfig {
             onData = onData ?: defListeners.onData
             onComplete = onComplete ?: defListeners.onComplete
             filter = filter ?: defListeners.filter
+
+            def hasActiveListener = [onStart?onStart.length()>0:false,
+                                     onHeader?onHeader.length()>0:false,
+                                     onData?onData.length()>0:false,
+                                     onComplete?onComplete.length()>0:false]
+
+            if (newQueriesConfig.parallel && hasActiveListener.find {it}) {
+                LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
+                newQueriesConfig.parallel = false
+            }
         }
 
         initListeners(newListeners)

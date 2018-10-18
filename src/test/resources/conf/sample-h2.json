@@ -46,6 +46,7 @@
         "onData" : "sample-h2-data.bat",
         "onComplete": "sample-h2-complete.bat"
       },
+      "parallel": true,
       "queries": ["CREATE TABLE PERSON(id int primary key, name varchar(255))"],
       "next" : {
         "queries": [
