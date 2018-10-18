@@ -5,3 +5,5 @@ insert into person (id, name) values (4, 'test4 name');
 insert into person (id, name) values (5, 'test5 name');
 
 insert into person (id, name) values (6, 'test6 name');
+
+insert into person (id, name) values (7, '%%%name%%%');

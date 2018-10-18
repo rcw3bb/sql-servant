@@ -1,6 +1,7 @@
 package xyz.ronella.tools.sql.servant.impl
 
 import xyz.ronella.tools.sql.servant.IValidator
+import xyz.ronella.tools.sql.servant.conf.ParamConfig
 
 class ParamManager implements IValidator<String> {
 
@@ -17,6 +18,17 @@ class ParamManager implements IValidator<String> {
                 String paramName = "${getParamToken(___key)}"
                 newQuery = query.replaceAll(paramName, ___value)
             }
+        }
+        newQuery
+    }
+
+    static String applyParams(final ParamConfig[] params, final String query) {
+        String newQuery = query
+        if (params) {
+            newQuery = applyParams(
+                    params.inject([:], {___result, ___item ->
+                        ___result.put(___item.name, ___item.value)
+                        ___result}) as Map<String, String>, query)
         }
         newQuery
     }

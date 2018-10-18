@@ -15,6 +15,7 @@ class Config {
 
     private String filename
     private String confDir
+    private JsonConfigWrapper jsonWrapper
 
     /**
      * Creates an instance of Config based on the default 'ss-default.json'
@@ -100,12 +101,10 @@ class Config {
      * @return An instance of JsonConfig.
      */
     JsonConfig getConfigAsJson() {
-        def jsonStr = this.configAsString
-        if (jsonStr) {
-            new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
+        if (!jsonWrapper) {
+            def jsonStr = this.configAsString
+            jsonWrapper = new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
         }
-        else {
-            null
-        }
+        jsonWrapper
     }
 }

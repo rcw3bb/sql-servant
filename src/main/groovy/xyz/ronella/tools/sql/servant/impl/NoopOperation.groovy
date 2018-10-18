@@ -36,7 +36,8 @@ class NoopOperation implements IOperation {
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
             queries.each {query ->
-                LOG.info("Will run: ${query}")
+                def newQuery = ParamManager.applyParams(cliArgs.params, query)
+                LOG.info("Will run: ${newQuery}")
             }
         }
         if (qryConfig.next) {

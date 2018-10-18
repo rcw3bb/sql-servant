@@ -5,6 +5,8 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
+import xyz.ronella.tools.sql.servant.db.QueryMode
+import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
 import xyz.ronella.tools.sql.servant.parser.QueryParserStrategy
 import xyz.ronella.tools.sql.servant.QueryServant
@@ -75,18 +77,19 @@ class ServantOperationTask implements Callable<IStatus> {
 
         boolean isSuccessful = false
         def startTime = new Date().time
+        def jsonConfig = config.configAsJson
         try {
             String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
+
+            if (QueryMode.SCRIPT == new QueryModeWrapper(qryConfig.mode).mode) {
+                parsedQuery = ParamManager.applyParams(jsonConfig.params, parsedQuery)
+            }
+
             if (LOG.isDebugEnabled()) {
                 LOG.debug("[${description}] Parsed Query: ${parsedQuery}")
             }
             
-            /*TODO: To be completed.
-            if (new Validate(new ParamManager()).check(parsedQuery)) {
-                throw new UnresolvedParameterException(parsedQuery)
-            }*/
-
-            DBManager.getInstance(config.configAsJson.dbPoolConfig).runStatement(qryConfig, parsedQuery)
+            DBManager.getInstance(jsonConfig.dbPoolConfig).runStatement(qryConfig, parsedQuery)
             LOG.info("[${description}] Success running: ${query}")
             invokeComplete(description, query, 'success')
             isSuccessful = true
