@@ -16,6 +16,6 @@ class QueryModeWrapperTest {
 
     @Test
     void testValidMode() {
-        assert QueryMode.SCRIPT==new QueryModeWrapper('scripts').mode
+        assert QueryMode.SCRIPT==new QueryModeWrapper('script').mode
     }
 }

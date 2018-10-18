@@ -103,7 +103,9 @@ class Config {
     JsonConfig getConfigAsJson() {
         if (!jsonWrapper) {
             def jsonStr = this.configAsString
-            jsonWrapper = new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
+            if (jsonStr) {
+                jsonWrapper = new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
+            }
         }
         jsonWrapper
     }
