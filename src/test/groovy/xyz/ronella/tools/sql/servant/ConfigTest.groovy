@@ -101,5 +101,9 @@ class ConfigTest {
         assert 0 == testReallyEmptyDefConfig.configAsJson.queries.size()
     }
 
+    @Test
+    void testReallyEmptyParamsCount() {
+        assert 0 == testReallyEmptyDefConfig.configAsJson.params.size()
+    }
 
 }

@@ -2,6 +2,9 @@ package xyz.ronella.tools.sql.servant
 
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
+import xyz.ronella.tools.sql.servant.conf.ParamConfig
+import xyz.ronella.tools.sql.servant.impl.UnexpectedParameterException
+import xyz.ronella.tools.sql.servant.impl.UnresolvedParametersException
 
 import java.util.concurrent.Future
 import java.util.concurrent.locks.Lock
@@ -77,6 +80,21 @@ class QueryServant {
         }
 
         def configJson = config.configAsJson
+
+        args.params.each {___cliParam ->
+            ParamConfig configParam = configJson.params.find {it.name == ___cliParam.key}
+            if (!configParam) {
+                throw new UnexpectedParameterException(___cliParam.key)
+            }
+            configParam.value = ___cliParam.value
+        }
+
+        def nullParams = configJson.params.findAll {!it.value}
+        if (nullParams) {
+            throw new UnresolvedParametersException(nullParams.inject(new StringBuilder(), { ___result, ___item ->
+                ___result.append(___result.length()>0?', ':'').append(___item.name)
+            }).toString())
+        }
 
         if (configJson) {
             ParallelEngine.instance.with {

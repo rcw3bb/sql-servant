@@ -22,4 +22,9 @@ class JsonConfig {
      * Holds all the instances of the QueriesConfiguration based on configuration.
      */
     QueriesConfig[] queries
+
+    /**
+     * Holds all the parameters configuration.
+     */
+    ParamConfig[] params
 }

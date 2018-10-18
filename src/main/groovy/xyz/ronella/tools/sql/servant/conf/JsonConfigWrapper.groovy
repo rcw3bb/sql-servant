@@ -16,6 +16,7 @@ class JsonConfigWrapper extends JsonConfig {
     private DefaultConfig defaults
     private DBPoolConfig dbPoolConfig
     private QueriesConfig[] queries
+    private ParamConfig[] params
 
     public final static def LOG = Logger.getLogger(JsonConfigWrapper.class.name)
 
@@ -130,6 +131,8 @@ class JsonConfigWrapper extends JsonConfig {
         def defListeners = defaults.listeners
         def newListeners = newQueriesConfig.listeners
 
+        boolean[] hasActiveListener = []
+
         newListeners.with {
             command = command ?: defListeners.command
             onStart = onStart ?: defListeners.onStart
@@ -138,15 +141,15 @@ class JsonConfigWrapper extends JsonConfig {
             onComplete = onComplete ?: defListeners.onComplete
             filter = filter ?: defListeners.filter
 
-            def hasActiveListener = [onStart?onStart.length()>0:false,
+            hasActiveListener = [onStart?onStart.length()>0:false,
                                      onHeader?onHeader.length()>0:false,
                                      onData?onData.length()>0:false,
                                      onComplete?onComplete.length()>0:false]
+        }
 
-            if (newQueriesConfig.parallel && hasActiveListener.find {it}) {
-                LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
-                newQueriesConfig.parallel = false
-            }
+        if (newQueriesConfig.parallel && hasActiveListener.find {it}) {
+            LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
+            newQueriesConfig.parallel = false
         }
 
         initListeners(newListeners)
@@ -182,7 +185,7 @@ class JsonConfigWrapper extends JsonConfig {
      */
     DBPoolConfig getDbPoolConfig() {
         if (!this.dbPoolConfig) {
-            def dbPoolConfig = jsonConfig.dbPoolConfig
+            def dbPoolConfig = jsonConfig.dbPoolConfig?:new DBPoolConfig()
             this.dbPoolConfig = new DBPoolConfig(
                     minIdle: dbPoolConfig ? (dbPoolConfig.minIdle?:DB_POOL_MIN_IDLE) : DB_POOL_MIN_IDLE,
                     maxIdle: dbPoolConfig ? (dbPoolConfig.maxIdle?:DB_POOL_MAX_IDLE) : DB_POOL_MAX_IDLE,
@@ -192,6 +195,20 @@ class JsonConfigWrapper extends JsonConfig {
             )
         }
         this.dbPoolConfig
+    }
+
+    /**
+     * Get the parameters configuration.
+     *
+     * @return An instance of ParamsConfig
+     * @since 1.2.0
+     */
+    ParamConfig[] getParams() {
+        if (!this.params) {
+            def params = jsonConfig.params?:[] as ParamConfig[]
+            this.params = params
+        }
+        this.params
     }
 
 }

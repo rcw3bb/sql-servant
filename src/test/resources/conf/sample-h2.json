@@ -7,6 +7,12 @@
     "maxIdle": 10,
     "maxOpenPreparedStatements" : 100
   },
+  "params" : [
+    {
+      "name": "name",
+      "description": "Name suffix"
+    }
+  ],
   "queries": [
     {
       "queries": [
