@@ -2,6 +2,8 @@ package xyz.ronella.tools.sql.servant.conf
 
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.Validate
+import xyz.ronella.tools.sql.servant.listener.HasActiveListener
 import xyz.ronella.tools.sql.servant.listener.ListenerException
 
 /**
@@ -131,8 +133,6 @@ class JsonConfigWrapper extends JsonConfig {
         def defListeners = defaults.listeners
         def newListeners = newQueriesConfig.listeners
 
-        boolean[] hasActiveListener = []
-
         newListeners.with {
             command = command ?: defListeners.command
             onStart = onStart ?: defListeners.onStart
@@ -140,14 +140,9 @@ class JsonConfigWrapper extends JsonConfig {
             onData = onData ?: defListeners.onData
             onComplete = onComplete ?: defListeners.onComplete
             filter = filter ?: defListeners.filter
-
-            hasActiveListener = [onStart?onStart.length()>0:false,
-                                     onHeader?onHeader.length()>0:false,
-                                     onData?onData.length()>0:false,
-                                     onComplete?onComplete.length()>0:false]
         }
 
-        if (newQueriesConfig.parallel && hasActiveListener.find {it}) {
+        if (newQueriesConfig.parallel && new Validate(new HasActiveListener()).check(newListeners)) {
             LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
             newQueriesConfig.parallel = false
         }

@@ -25,6 +25,7 @@ class JsonConfig {
 
     /**
      * Holds all the parameters configuration.
+     * @since 1.2.0
      */
     ParamConfig[] params
 }

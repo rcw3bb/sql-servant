@@ -6,9 +6,11 @@ import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
+import xyz.ronella.tools.sql.servant.listener.HasActiveListener
 
 import java.util.concurrent.Future
 
@@ -33,7 +35,12 @@ class DefaultServantOperation implements IOperation {
     @Override
     def perform(List<Future<IStatus>> futures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         def description = qryConfig.description
-        LOG.info "---[${description}]${cliArgs.parallel || qryConfig.parallel ? '[PARALLEL]' : ''}---"
+
+        if (cliArgs.parallel && !(new Validate(new HasActiveListener()).check(qryConfig.listeners))) {
+            qryConfig.parallel=true
+        }
+
+        LOG.info "---[${description}]${qryConfig.parallel ? '[PARALLEL]' : ''}---"
         LOG.info "[${description}] Connection String: ${qryConfig.connectionString}"
         LOG.info "[${description}] Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
 
@@ -48,7 +55,7 @@ class DefaultServantOperation implements IOperation {
 
                 def servantTask = new ServantOperationTask(config, qryConfig, updatedQuery)
 
-                if (cliArgs.parallel || qryConfig.parallel) {
+                if (qryConfig.parallel) {
                     ParallelEngine.instance.with {
                         if (!isStarted()) {
                             start()
@@ -66,7 +73,7 @@ class DefaultServantOperation implements IOperation {
         if (continueNext) {
             if (qryConfig.next) {
                 def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
-                if (cliArgs.parallel || qryConfig.parallel) {
+                if (qryConfig.parallel) {
                     futures.add(ParallelEngine.instance.process(nextTask))
                 } else {
                     nextTask.call()

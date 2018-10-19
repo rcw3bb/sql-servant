@@ -3,7 +3,7 @@ package xyz.ronella.tools.sql.servant
 class Validate<TYPE> {
     private IValidator validator
 
-    public Validate(IValidator validator) {
+    Validate(IValidator validator) {
         this.validator = validator
     }
 
