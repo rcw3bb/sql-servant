@@ -1,0 +1,14 @@
+#!/bin/sh
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+LIBS_DIR=${SCRIPT_DIR}/libs
+LIBS=@libraries@
+
+#Add jdbc drivers here
+DRVS_DIR=${SCRIPT_DIR}/drivers
+DRVS=@drivers@
+
+MAIN_JAR=${LIBS_DIR}/sql-servant-@app.version@.jar
+CLASSPATH=${SCRIPT_DIR}:${LIBS}:${MAIN_JAR}:${DRVS}
+
+java -cp ${CLASSPATH} @java.library.path@ sqlsrvnt $*

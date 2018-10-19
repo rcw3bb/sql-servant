@@ -60,6 +60,16 @@ String getDrvs() {
         "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
 }
 
+String getLibsNoArch() {
+    configurations.compile.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ':' : '')}\${LIBS_DIR}/${___file.name}"})
+}
+
+String getDrvsNoArch() {
+    configurations.drivers.inject(new String(), {___aggr, ___file ->
+        "${___aggr}${(___aggr.length()>1 ? ':' : '')}\${DRVS_DIR}/${___file.name}"})
+}
+
 String getDrvsMSSQL() {
     configurations.mssql.inject(getDrvs(), {___aggr, ___file ->
         "${___aggr}${(___aggr.length()>1 ? ';' : '')}%DRVS_DIR%\\${___file.name}"})
@@ -87,6 +97,13 @@ task pack(type: Zip, dependsOn: 'jar') {
         filter ReplaceTokens, tokens : ['app.version': project.version,
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvs(),
+                                        'java.library.path' : '']
+    }
+    from(sourceSets.main.resources.srcDirs.first()) {
+        include 'sqlsrvnt'
+        filter ReplaceTokens, tokens : ['app.version': project.version,
+                                        'libraries' : getLibsNoArch(),
+                                        'drivers' : getDrvsNoArch(),
                                         'java.library.path' : '']
     }
     from(configurations.compile) {

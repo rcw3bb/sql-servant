@@ -101,18 +101,18 @@ class QueryServant {
         def configJson = config.configAsJson
 
         try {
-            checkParams(args, configJson)
-
-            if (args.params) {
-                def strParams = configJson.params.inject(new StringBuilder(), {___result, ___item ->
-                    ___result.append(___result.length()>0?', ':'').append(___item.name).
-                            append('=').append(___item.value)
-                    ___result
-                })
-                LOG.info "Parameters: ${strParams}"
-            }
-
             if (configJson) {
+                checkParams(args, configJson)
+
+                if (args.params) {
+                    def strParams = configJson.params.inject(new StringBuilder(), {___result, ___item ->
+                        ___result.append(___result.length()>0?', ':'').append(___item.name).
+                                append('=').append(___item.value)
+                        ___result
+                    })
+                    LOG.info "Parameters: ${strParams}"
+                }
+
                 ParallelEngine.instance.with {
                     List<Future<IStatus>> futures = new ArrayList<>()
                     try {
