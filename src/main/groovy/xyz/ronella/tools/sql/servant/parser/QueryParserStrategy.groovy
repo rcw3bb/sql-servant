@@ -23,6 +23,7 @@ class QueryParserStrategy {
                 new DefaultQueryParser(config, qryConfig).queryParse(query)
                 break
             case QueryMode.SCRIPT:
+            case QueryMode.SINGLE_QUERY_SCRIPT:
                 new ScriptQueryParser(config, qryConfig).queryParse(query)
                 break
         }

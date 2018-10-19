@@ -52,7 +52,7 @@ class DBManager {
         return dbManager
     }
 
-    private void validate(QueriesConfig qryConfig) {
+    private static void validate(QueriesConfig qryConfig) {
         if (!qryConfig.jdbcDriver) {
             throw new DBMissingValueException("jdbcDriver")
         }
@@ -122,6 +122,7 @@ class DBManager {
 
             switch (new QueryModeWrapper(qryConfig.mode).mode) {
                 case QueryMode.QUERY:
+                case QueryMode.SINGLE_QUERY_SCRIPT:
                     ResultSet rs = stmt.executeQuery()
                     def metaData = rs.metaData
                     try {

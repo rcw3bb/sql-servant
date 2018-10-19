@@ -35,6 +35,9 @@ class QueryModeWrapper {
             case 'script':
                 QueryMode.SCRIPT
                 break
+            case 'sqs':
+                QueryMode.SINGLE_QUERY_SCRIPT
+                break
             default:
                 throw new QueryModeException("Mode=${this.mode}")
         }

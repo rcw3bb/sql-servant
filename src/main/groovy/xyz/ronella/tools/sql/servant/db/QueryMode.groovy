@@ -18,7 +18,15 @@ enum QueryMode {
     QUERY,
 
     /**
-     * The appropriate mode to use of the sql statements is contained in a scripts.
+     * The appropriate mode to use of the sql statements is contained in a script.
      */
-    SCRIPT
+    SCRIPT,
+
+    /**
+     * The appropriate mode to use of the sql statements is contained in a script
+     * where the only entry is a query (i.e. select statement).
+     *
+     * @since 1.2.0
+     */
+    SINGLE_QUERY_SCRIPT
 }

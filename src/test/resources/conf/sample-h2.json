@@ -22,7 +22,12 @@
       ],
       "next" : {
         "mode" : "script",
-        "queries" : ["sample-h2-script.txt"]
+        "queries" : ["sample-h2-script.txt"],
+        "next" : {
+          "mode" : "sqs",
+          "description" : "Sample Single Query Script",
+          "queries" : ["sample-h2-query-script.txt"]
+        }
       }
     },
     {

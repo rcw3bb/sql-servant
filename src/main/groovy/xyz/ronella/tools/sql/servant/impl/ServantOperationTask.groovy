@@ -3,7 +3,6 @@ package xyz.ronella.tools.sql.servant.impl
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
-import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
 import xyz.ronella.tools.sql.servant.db.QueryMode
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
@@ -14,7 +13,6 @@ import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 import xyz.ronella.tools.sql.servant.db.DBManager
 
 import java.util.concurrent.Callable
-import java.util.function.Predicate
 
 /**
  * An implementation of Callable that processes the first configured queries.
@@ -81,7 +79,7 @@ class ServantOperationTask implements Callable<IStatus> {
         try {
             String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
 
-            if (QueryMode.SCRIPT == new QueryModeWrapper(qryConfig.mode).mode) {
+            if ([QueryMode.SINGLE_QUERY_SCRIPT, QueryMode.SCRIPT].contains(new QueryModeWrapper(qryConfig.mode).mode)) {
                 parsedQuery = ParamManager.applyParams(jsonConfig.params, parsedQuery)
             }
 
