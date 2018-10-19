@@ -2,6 +2,7 @@ package xyz.ronella.tools.sql.servant
 
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
+import xyz.ronella.tools.sql.servant.conf.JsonConfig
 import xyz.ronella.tools.sql.servant.conf.ParamConfig
 import xyz.ronella.tools.sql.servant.impl.UnexpectedParameterException
 import xyz.ronella.tools.sql.servant.impl.UnresolvedParametersException
@@ -64,23 +65,7 @@ class QueryServant {
         }
     }
 
-    /**
-     * The actual method the is doing the configuration processing.
-     *
-     * @param args An instance of CliArgs.
-     */
-    def perform(CliArgs args) {
-        LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
-        if (args.environment) {
-            LOG.info "Environment: ${args.environment}"
-        }
-        LOG.info "Configuration: ${config.configFilename}"
-        if (args.params) {
-            LOG.info "Parameters: ${args.params}"
-        }
-
-        def configJson = config.configAsJson
-
+    private static def checkParams(CliArgs args, JsonConfig configJson) {
         args.params.each {___cliParam ->
             ParamConfig configParam = configJson.params.find {it.name == ___cliParam.key}
             if (!configParam) {
@@ -93,33 +78,71 @@ class QueryServant {
         if (nullParams) {
             throw new UnresolvedParametersException(nullParams.inject(new StringBuilder(), { ___result, ___item ->
                 ___result.append(___result.length()>0?', ':'').append(___item.name)
+                if (___item.description) {
+                    ___result.append('[').append(___item.description).append(']')
+                }
+                ___result
             }).toString())
         }
+    }
 
-        if (configJson) {
-            ParallelEngine.instance.with {
-                List<Future<IStatus>> futures = new ArrayList<>()
-                try {
-                    configJson.queries.each { qryConfig ->
-                        new OperationStrategy(args).runOperation(futures, config, qryConfig)
+    /**
+     * The actual method the is doing the configuration processing.
+     *
+     * @param args An instance of CliArgs.
+     */
+    def perform(CliArgs args) {
+        LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
+        if (args.environment) {
+            LOG.info "Environment: ${args.environment}"
+        }
+        LOG.info "Configuration: ${config.configFilename}"
+
+        def configJson = config.configAsJson
+
+        try {
+            checkParams(args, configJson)
+
+            if (args.params) {
+                def strParams = configJson.params.inject(new StringBuilder(), {___result, ___item ->
+                    ___result.append(___result.length()>0?', ':'').append(___item.name).
+                            append('=').append(___item.value)
+                    ___result
+                })
+                LOG.info "Parameters: ${strParams}"
+            }
+
+            if (configJson) {
+                ParallelEngine.instance.with {
+                    List<Future<IStatus>> futures = new ArrayList<>()
+                    try {
+                        configJson.queries.each { qryConfig ->
+                            new OperationStrategy(args).runOperation(futures, config, qryConfig)
+                        }
+                        Iterator<Future<IStatus>> iterator=futures.iterator()
+                        while (iterator.hasNext()) {
+                            iterator.next().get()
+                        }
                     }
-                    Iterator<Future<IStatus>> iterator=futures.iterator()
-                    while (iterator.hasNext()) {
-                        iterator.next().get()
-                    }
-                }
-                finally {
-                    while(usageLevel!=0) {
-                        Thread.sleep(500)
-                    }
-                    if (isStarted()) {
-                        stop()
+                    finally {
+                        while(usageLevel!=0) {
+                            Thread.sleep(500)
+                        }
+                        if (isStarted()) {
+                            stop()
+                        }
                     }
                 }
             }
+            else {
+                LOG.info "Nothing to process."
+            }
         }
-        else {
-            LOG.info "Nothing to process."
+        catch (UnexpectedParameterException upe) {
+            LOG.error("Unexpected parameter: ${upe.message}")
+        }
+        catch (UnresolvedParametersException upe) {
+            LOG.error("Missing parameter(s): ${upe.message}")
         }
 
         LOG.info 'Done'
