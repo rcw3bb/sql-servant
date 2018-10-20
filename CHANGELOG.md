@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 : 2018-10-20
+### Added
+- Support to script mode.
+- Support to single query script _(i.e. sqs)_ mode.
+- Support listeners.
+- Support parameterized query based on configured parameters.
+- Shell script.
+
 ## 1.1.0 : 2018-10-07
 ### Added
 - Packages for windows.
