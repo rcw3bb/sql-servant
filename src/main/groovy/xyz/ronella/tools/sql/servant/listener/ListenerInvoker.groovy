@@ -3,6 +3,12 @@ package xyz.ronella.tools.sql.servant.listener
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
+/**
+ * The main class that is responsible for invoking the listener.
+ *
+ * @author Ron Webb
+ * @since 1.2.0
+ */
 class ListenerInvoker {
 
     public final static def LOG = Logger.getLogger(ListenerInvoker.class.name)
@@ -10,6 +16,11 @@ class ListenerInvoker {
 
     private QueriesConfig qryConfig
 
+    /**
+     * Creates an instance of ListenerInvoker.
+     *
+     * @param qryConfig The instance of QueriesConfig where listeners were attached.
+     */
     ListenerInvoker(QueriesConfig qryConfig) {
         this.qryConfig = qryConfig
     }
@@ -47,6 +58,14 @@ class ListenerInvoker {
         })
     }
 
+    /**
+     * The method responsible for invoking the start listener.
+     *
+     * @param cmd The configured name of the listener.
+     * @param description The description of the query begin processed.
+     * @param query The actual query being executed.
+     * @param firstTime Indicates if the current query description is being processed the first time.
+     */
     void invokeStartListener(String cmd, String description, String query, boolean firstTime) {
         if (command) {
             def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\" \"${firstTime}\"\""
@@ -55,6 +74,14 @@ class ListenerInvoker {
         }
     }
 
+    /**
+     * The method responsible for invoking the data listener.
+     *
+     * @param cmd The configured name of the listener.
+     * @param description The description of the query begin processed.
+     * @param query The actual query being executed.
+     * @param params The data parameters returned after executing the query.
+     */
     void invokeDataListener(String cmd, String description, String query, String params) {
         String args = params.split(',').inject(new StringBuilder(),
                 {___output, param ->
@@ -69,6 +96,14 @@ class ListenerInvoker {
         }
     }
 
+    /**
+     * The method responsible for invoking the complete listener.
+     *
+     * @param cmd The configured name of the listener.
+     * @param description The description of the query begin processed.
+     * @param query The actual query being executed.
+     * @param success Holds true if the execution of the query is a success.
+     */
     void invokeCompleteListener(String cmd, String description, String query, String success) {
         if (command) {
             def cmdToRun = "${command} \"\"${cmd}\" \"${dateArg}\" \"${applyFilter(description)}\" \"${applyFilter(query)}\" \"${success}\"\""
