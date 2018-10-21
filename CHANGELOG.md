@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 : 2018-10-20
+## 1.2.0 : 2018-10-21
 ### Added
 - Support to script mode.
 - Support to single query script _(i.e. sqs)_ mode.
