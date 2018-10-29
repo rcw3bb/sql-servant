@@ -11,6 +11,7 @@ class ConfigTest {
     final def testDefaultConfig = new Config('./src/test/resources/conf','ss-default')
     final def testEmptyDefaultConfig = new Config('./src/test/resources/conf','empty')
     final def testReallyEmptyDefConfig = new Config('./src/test/resources/conf','really-empty')
+    final def testFilenameConfig = new Config('./src/test/resources/conf','ss-filename')
 
     @Test
     void testDefaultConfig() {
@@ -106,4 +107,18 @@ class ConfigTest {
         assert 0 == testReallyEmptyDefConfig.configAsJson.params.size()
     }
 
+    @Test
+    void testFilename() {
+        assert !testFilenameConfig.configAsJson.defaults.filename
+    }
+
+    @Test
+    void testFilenameParallel() {
+        assert testFilenameConfig.configAsJson.defaults.parallel
+    }
+
+    @Test
+    void testFilenameConnectionString() {
+        assert 'test connection string' == testFilenameConfig.configAsJson.defaults.connectionString
+    }
 }

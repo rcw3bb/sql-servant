@@ -1,7 +1,8 @@
 package xyz.ronella.tools.sql.servant
 
-import com.google.gson.Gson
-
+import xyz.ronella.tools.sql.servant.command.Invoker
+import xyz.ronella.tools.sql.servant.command.impl.GetConfigText
+import xyz.ronella.tools.sql.servant.command.impl.ToJson
 import xyz.ronella.tools.sql.servant.conf.JsonConfig
 import xyz.ronella.tools.sql.servant.conf.JsonConfigWrapper
 
@@ -85,16 +86,6 @@ class Config {
         new File("${this.confDir}/../listeners").getAbsolutePath()
     }
 
-    private String getConfigAsString() {
-        File file = new File(this.filename)
-        if (file.exists() && file.canRead()) {
-            file.text
-        }
-        else {
-            null
-        }
-    }
-
     /**
      * Creates a JsonCcnfig instance based on the configuration being processed.
      *
@@ -102,9 +93,9 @@ class Config {
      */
     JsonConfig getConfigAsJson() {
         if (!jsonWrapper) {
-            def jsonStr = this.configAsString
+            def jsonStr = Invoker.invoke(new GetConfigText(filename))
             if (jsonStr) {
-                jsonWrapper = new JsonConfigWrapper(this, new Gson().fromJson(jsonStr, JsonConfig.class))
+                jsonWrapper = new JsonConfigWrapper(this, Invoker.invoke(new ToJson<JsonConfig>(jsonStr, JsonConfig.class)))
             }
         }
         jsonWrapper

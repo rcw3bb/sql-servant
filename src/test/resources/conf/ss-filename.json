@@ -1,0 +1,6 @@
+{
+  "defaults": {
+    "filename": ".\\src\\test\\resources\\conf\\default-external.json",
+    "parallel": true
+  }
+}

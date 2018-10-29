@@ -26,13 +26,13 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         }
     }
 
-    def cli = new CliBuilder(usage:'sqlsrvnt -[hnpcv] [config-name]')
+    def cli = new CliBuilder(usage:'sqlsrvnt -[hnpv] [-c <config-name>] [-e <environment>] [-P <parameter=value>]')
     cli.with {
         h longOpt : 'help', 'Show usage information'
         n longOpt : 'noop', 'Run without actually performing the gathering'
         p longOpt : 'parallel', 'Run the actual gathering in parallel'
-        c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
         v longOpt : 'version', 'Shows the current version'
+        c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
         e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
         P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to parameters found in the configuration')
     }

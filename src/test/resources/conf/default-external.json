@@ -1,0 +1,6 @@
+{
+  "connectionString": "test connection string",
+  "username": "",
+  "password": "",
+  "parallel": false
+}

@@ -3,6 +3,9 @@ package xyz.ronella.tools.sql.servant.conf
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.Validate
+import xyz.ronella.tools.sql.servant.command.Invoker
+import xyz.ronella.tools.sql.servant.command.impl.GetConfigText
+import xyz.ronella.tools.sql.servant.command.impl.ToJson
 import xyz.ronella.tools.sql.servant.listener.HasActiveListener
 import xyz.ronella.tools.sql.servant.listener.ListenerException
 
@@ -49,15 +52,32 @@ class JsonConfigWrapper extends JsonConfig {
     DefaultConfig getDefaults() {
         if (!this.defaults) {
             def defaults = jsonConfig.defaults?:new DefaultConfig()
+            String defaultsFilename = defaults.filename ? defaults.filename : null
+            DefaultConfig defaultsExternal = null
+
+            if (defaultsFilename) {
+                File defaultsFile = new File(defaultsFilename)
+                String defaultsText = Invoker.invoke(new GetConfigText(defaultsFile.absolutePath))
+                if (defaultsText) {
+                    defaultsExternal = Invoker.invoke(new ToJson<DefaultConfig>(defaultsText, DefaultConfig.class))
+                }
+            }
+
+            final def EMPTY_LISTENERS = new ListenersConfig()
+            final String DEFAULT_MODE = 'stmt'
+
             this.defaults = new DefaultConfig(
-                    mode: defaults.mode?:'stmt',
-                    jdbcDriver: defaults.jdbcDriver,
-                    connectionString: defaults.connectionString,
-                    parallel: defaults.parallel?:false,
-                    windowsAuthentication: defaults.windowsAuthentication?:false,
-                    username: defaults.username?:'',
-                    password: defaults.password?:'',
-                    listeners: defaults.listeners?:new ListenersConfig()
+                    mode: defaults.mode?:(defaultsExternal?defaultsExternal.mode?:DEFAULT_MODE:DEFAULT_MODE),
+                    jdbcDriver: defaults.jdbcDriver?:(defaultsExternal?defaultsExternal.jdbcDriver:null),
+                    connectionString: defaults.connectionString?:
+                            (defaultsExternal?defaultsExternal.connectionString:null),
+                    parallel: defaults.parallel?:(defaultsExternal?defaultsExternal.parallel?:false:false),
+                    windowsAuthentication: defaults.windowsAuthentication?:
+                            (defaultsExternal?defaultsExternal.windowsAuthentication?:false:false),
+                    username: defaults.username?:(defaultsExternal?defaultsExternal.username?:'':''),
+                    password: defaults.password?:(defaultsExternal?defaultsExternal.password?:'':''),
+                    listeners: defaults.listeners?:
+                            (defaultsExternal?defaultsExternal.listeners?:EMPTY_LISTENERS:EMPTY_LISTENERS)
             )
 
             if (isWindows()) {

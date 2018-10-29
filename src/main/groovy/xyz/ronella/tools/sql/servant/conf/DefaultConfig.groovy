@@ -52,4 +52,11 @@ class DefaultConfig {
      */
     ListenersConfig listeners
 
+    /**
+     * Holds the external filename of the default configuration.
+     *
+     * @since 1.3.0
+     */
+    String filename
+
 }
