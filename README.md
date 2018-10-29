@@ -175,7 +175,7 @@ windowsAuthentication | Boolean | false | | This property is for SQL server only
 parallel | Boolean | false | | If set to **true**, the configured queries will be executed in parallel.
 listeners | ListenersConfig | | | Holds the listeners to be executed with the query processing.
 
-#####ListenersConfig Type
+##### ListenersConfig Type
 
 Property | Type | Default | Description
 ---------|------|---------|------------
