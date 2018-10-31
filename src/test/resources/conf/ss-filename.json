@@ -2,5 +2,10 @@
   "defaults": {
     "filename": ".\\src\\test\\resources\\conf\\default-external.json",
     "parallel": true
-  }
+  },
+  "queries": [{
+      "description" : "Overridden description",
+      "filename" : ".\\src\\test\\resources\\conf\\queries-external.json"
+    }
+  ]
 }

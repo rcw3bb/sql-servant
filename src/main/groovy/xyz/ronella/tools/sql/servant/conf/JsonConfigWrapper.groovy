@@ -44,6 +44,14 @@ class JsonConfigWrapper extends JsonConfig {
         this.jsonConfig = jsonConfig
     }
 
+    private static <TYPE_EXTERNAL_SOURCE,TYPE_OUTPUT> TYPE_OUTPUT resolveValue(TYPE_OUTPUT defaultInstanceValue,
+                                                                               TYPE_EXTERNAL_SOURCE fileInstance,
+                                                                               TYPE_OUTPUT defaultValue,
+                                                                               Closure<TYPE_OUTPUT> fileInstanceValue
+    ) {
+        return defaultInstanceValue?:(fileInstance!=null?fileInstanceValue(fileInstance):defaultValue)?:defaultValue
+    }
+
     /**
      * Get the prepared instance of DefaultConfig.
      *
@@ -67,17 +75,22 @@ class JsonConfigWrapper extends JsonConfig {
             final String DEFAULT_MODE = 'stmt'
 
             this.defaults = new DefaultConfig(
-                    mode: defaults.mode?:(defaultsExternal?defaultsExternal.mode?:DEFAULT_MODE:DEFAULT_MODE),
-                    jdbcDriver: defaults.jdbcDriver?:(defaultsExternal?defaultsExternal.jdbcDriver:null),
-                    connectionString: defaults.connectionString?:
-                            (defaultsExternal?defaultsExternal.connectionString:null),
-                    parallel: defaults.parallel?:(defaultsExternal?defaultsExternal.parallel?:false:false),
-                    windowsAuthentication: defaults.windowsAuthentication?:
-                            (defaultsExternal?defaultsExternal.windowsAuthentication?:false:false),
-                    username: defaults.username?:(defaultsExternal?defaultsExternal.username?:'':''),
-                    password: defaults.password?:(defaultsExternal?defaultsExternal.password?:'':''),
-                    listeners: defaults.listeners?:
-                            (defaultsExternal?defaultsExternal.listeners?:EMPTY_LISTENERS:EMPTY_LISTENERS)
+                    mode: resolveValue(defaults.mode, defaultsExternal, DEFAULT_MODE,
+                            {___fileInstance -> ___fileInstance.mode}),
+                    jdbcDriver: resolveValue(defaults.jdbcDriver, defaultsExternal, null,
+                            {___fileInstance -> ___fileInstance.jdbcDriver}),
+                    connectionString: resolveValue(defaults.connectionString, defaultsExternal, null,
+                            {___fileInstance -> ___fileInstance.connectionString}),
+                    parallel: resolveValue(defaults.parallel, defaultsExternal, false,
+                            {___fileInstance -> ___fileInstance.parallel}),
+                    windowsAuthentication: resolveValue(defaults.windowsAuthentication,defaultsExternal,false,
+                            {___fileInstance -> ___fileInstance.windowsAuthentication}),
+                    username: resolveValue(defaults.username, defaultsExternal, '',
+                            {___fileInstance -> ___fileInstance.username}),
+                    password: resolveValue(defaults.password, defaultsExternal, '',
+                            {___fileInstance -> ___fileInstance.password}),
+                    listeners: resolveValue(defaults.listeners, defaultsExternal, EMPTY_LISTENERS,
+                            {___fileInstance -> ___fileInstance.listeners})
             )
 
             if (isWindows()) {
@@ -135,18 +148,39 @@ class JsonConfigWrapper extends JsonConfig {
     }
 
     private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
+        String queriesFilename = ___qryConfig.filename ? ___qryConfig.filename : null
+        DefaultConfig queriesExternal = null
+
+        if (queriesFilename) {
+            File defaultsFile = new File(queriesFilename)
+            String defaultsText = Invoker.invoke(new GetConfigText(defaultsFile.absolutePath))
+            if (defaultsText) {
+                queriesExternal = Invoker.invoke(new ToJson<QueriesConfig>(defaultsText, QueriesConfig.class))
+            }
+        }
+
         QueriesConfig newQueriesConfig = new QueriesConfig(
-                jdbcDriver: ___qryConfig.jdbcDriver ?: defaults.jdbcDriver,
-                connectionString: ___qryConfig.connectionString ?: defaults.connectionString,
-                username: ___qryConfig.username ?: defaults.username,
-                password: ___qryConfig.password ?: defaults.password,
-                mode: ___qryConfig.mode==null ? defaults.mode : ___qryConfig.mode,
-                parallel: ___qryConfig.parallel==null ? defaults.parallel : ___qryConfig.parallel,
-                windowsAuthentication: ___qryConfig.windowsAuthentication==null ? defaults.windowsAuthentication :
-                        ___qryConfig.windowsAuthentication,
-                description: description,
-                queries: ___qryConfig.queries ?: defaults.queries,
-                listeners: ___qryConfig.listeners ?: defaults.listeners)
+                jdbcDriver: resolveValue(___qryConfig.jdbcDriver, queriesExternal, defaults.jdbcDriver,
+                        {___fileInstance -> ___fileInstance.jdbcDriver}),
+                connectionString: resolveValue(___qryConfig.connectionString, queriesExternal,defaults.connectionString,
+                        {___fileInstance -> ___fileInstance.connectionString}),
+                username: resolveValue(___qryConfig.username, queriesExternal, defaults.username,
+                        {___fileInstance -> queriesExternal.username}),
+                password: resolveValue(___qryConfig.password, queriesExternal, defaults.password,
+                        {___fileInstance -> ___fileInstance.password}),
+                mode: resolveValue(___qryConfig.mode, queriesExternal, defaults.mode,
+                        {___fileInstance -> ___fileInstance.mode}),
+                parallel: resolveValue(___qryConfig.parallel, queriesExternal, defaults.parallel,
+                        {___fileInstance -> ___fileInstance.parallel}),
+                windowsAuthentication: resolveValue(___qryConfig.windowsAuthentication, queriesExternal,
+                        defaults.windowsAuthentication,
+                        {___fileInstance -> ___fileInstance.windowsAuthentication}),
+                description: resolveValue(description, queriesExternal, description,
+                        {___fileInstance -> ___fileInstance.description}),
+                queries: resolveValue(___qryConfig.queries, queriesExternal, defaults.queries,
+                        {___fileInstance -> ___fileInstance.queries}),
+                listeners: resolveValue(___qryConfig.listeners, queriesExternal, defaults.listeners,
+                        {___fileInstance -> ___fileInstance.listeners}))
 
         processWindowsAuthentication(newQueriesConfig)
 

@@ -121,4 +121,20 @@ class ConfigTest {
     void testFilenameConnectionString() {
         assert 'test connection string' == testFilenameConfig.configAsJson.defaults.connectionString
     }
+
+    @Test
+    void testFilenameQueries() {
+        assert !testFilenameConfig.configAsJson.queries[0].filename
+    }
+
+    @Test
+    void testFilenameDescription() {
+        assert 'Overridden description'==testFilenameConfig.configAsJson.queries[0].description
+    }
+
+    @Test
+    void testFilenameQueriesCount() {
+        assert 3 == testFilenameConfig.configAsJson.queries[0].queries.size()
+    }
+
 }
