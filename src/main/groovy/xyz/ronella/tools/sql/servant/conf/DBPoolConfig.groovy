@@ -23,4 +23,11 @@ class DBPoolConfig {
      * The maximum number of PreparedStatement instances before blocking.
      */
     Integer maxOpenPreparedStatements
+
+    /**
+     * Holds the external filename of the DB pool configuration.
+     *
+     * @since 1.3.0
+     */
+    String filename
 }

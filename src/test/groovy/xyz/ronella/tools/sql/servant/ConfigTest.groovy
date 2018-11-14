@@ -137,4 +137,14 @@ class ConfigTest {
         assert 3 == testFilenameConfig.configAsJson.queries[0].queries.size()
     }
 
+    @Test
+    void testFilenameDBPoolMinIdle() {
+        assert 5 == testFilenameConfig.configAsJson.dbPoolConfig.minIdle
+    }
+
+    @Test
+    void testFilenameDBPoolMaxIdle() {
+        assert 10 == testFilenameConfig.configAsJson.dbPoolConfig.maxIdle
+    }
+
 }

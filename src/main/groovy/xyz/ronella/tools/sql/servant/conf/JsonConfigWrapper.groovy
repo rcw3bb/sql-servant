@@ -235,12 +235,26 @@ class JsonConfigWrapper extends JsonConfig {
     DBPoolConfig getDbPoolConfig() {
         if (!this.dbPoolConfig) {
             def dbPoolConfig = jsonConfig.dbPoolConfig?:new DBPoolConfig()
+
+            String dbPoolFilename = dbPoolConfig.filename ? dbPoolConfig.filename : null
+            DBPoolConfig dbPoolExternal = null
+
+            if (dbPoolFilename) {
+                File dbPoolFile = new File(dbPoolFilename)
+                String dbPoolText = Invoker.invoke(new GetConfigText(dbPoolFile.absolutePath))
+                if (dbPoolText) {
+                    dbPoolExternal = Invoker.invoke(new ToJson<DBPoolConfig>(dbPoolText, DBPoolConfig.class))
+                }
+            }
+
             this.dbPoolConfig = new DBPoolConfig(
-                    minIdle: dbPoolConfig ? (dbPoolConfig.minIdle?:DB_POOL_MIN_IDLE) : DB_POOL_MIN_IDLE,
-                    maxIdle: dbPoolConfig ? (dbPoolConfig.maxIdle?:DB_POOL_MAX_IDLE) : DB_POOL_MAX_IDLE,
-                    maxOpenPreparedStatements: dbPoolConfig
-                            ? (dbPoolConfig.maxOpenPreparedStatements?:DB_POOL_MAX_OPEN_PREPARED_STATEMENTS)
-                            : DB_POOL_MAX_OPEN_PREPARED_STATEMENTS
+                    minIdle: resolveValue(dbPoolConfig.minIdle, dbPoolExternal, DB_POOL_MIN_IDLE,
+                            {___fileInstance -> ___fileInstance.minIdle}),
+                    maxIdle: resolveValue(dbPoolConfig.maxIdle, dbPoolExternal, DB_POOL_MAX_IDLE,
+                            {___fileInstance -> ___fileInstance.maxIdle}),
+                    maxOpenPreparedStatements: resolveValue(dbPoolConfig.maxOpenPreparedStatements, dbPoolExternal,
+                            DB_POOL_MAX_OPEN_PREPARED_STATEMENTS,
+                            {___fileInstance -> ___fileInstance.maxOpenPreparedStatements})
             )
         }
         this.dbPoolConfig
