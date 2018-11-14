@@ -13,5 +13,9 @@
       "description" : "Sample Single Query Script",
       "queries" : ["sample-h2-query-script.txt"]
     }
+  },
+  "listeners" : {
+    "onHeader" : "sample-h2-datum.bat",
+    "filename" : ".\\src\\test\\resources\\conf\\listeners-external.json"
   }
 }

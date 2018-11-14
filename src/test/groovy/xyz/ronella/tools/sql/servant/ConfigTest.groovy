@@ -138,6 +138,22 @@ class ConfigTest {
     }
 
     @Test
+    void testListenerOnHeaderQueries() {
+        File file = new File("${testFilenameConfig.configDirectory}/../listeners/sample-h2-datum.bat")
+        String expected = file.absolutePath
+        assert expected == testFilenameConfig.configAsJson.queries[0].listeners.onHeader
+    }
+
+/*
+    @Test
+    void testListenerOnDataQueries() {
+        File file = new File("${testFilenameConfig.configDirectory}/../listeners/sample-h2-data.bat")
+        String expected = file.absolutePath
+        assert expected == testFilenameConfig.configAsJson.queries[0].listeners.onData
+    }
+*/
+
+    @Test
     void testFilenameDBPoolMinIdle() {
         assert 5 == testFilenameConfig.configAsJson.dbPoolConfig.minIdle
     }

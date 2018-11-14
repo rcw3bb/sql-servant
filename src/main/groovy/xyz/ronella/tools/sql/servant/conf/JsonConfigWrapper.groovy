@@ -60,16 +60,7 @@ class JsonConfigWrapper extends JsonConfig {
     DefaultConfig getDefaults() {
         if (!this.defaults) {
             def defaults = jsonConfig.defaults?:new DefaultConfig()
-            String defaultsFilename = defaults.filename ? defaults.filename : null
-            DefaultConfig defaultsExternal = null
-
-            if (defaultsFilename) {
-                File defaultsFile = new File(defaultsFilename)
-                String defaultsText = Invoker.invoke(new GetConfigText(defaultsFile.absolutePath))
-                if (defaultsText) {
-                    defaultsExternal = Invoker.invoke(new ToJson<DefaultConfig>(defaultsText, DefaultConfig.class))
-                }
-            }
+            DefaultConfig defaultsExternal = getJsonInstance {defaults.filename}
 
             final def EMPTY_LISTENERS = new ListenersConfig()
             final String DEFAULT_MODE = 'stmt'
@@ -147,17 +138,31 @@ class JsonConfigWrapper extends JsonConfig {
         }
     }
 
-    private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
-        String queriesFilename = ___qryConfig.filename ? ___qryConfig.filename : null
-        DefaultConfig queriesExternal = null
+    private static <TYPE_OUTPUT, TYPE_INPUT extends TYPE_OUTPUT> TYPE_OUTPUT getJsonInstance(Class<TYPE_INPUT> clazz,
+                                                                                             Closure<String> filename) {
+        String actualFilename = filename()
+        TYPE_OUTPUT jsonInstance = null
 
-        if (queriesFilename) {
-            File defaultsFile = new File(queriesFilename)
+        if (actualFilename) {
+            File defaultsFile = new File(actualFilename)
             String defaultsText = Invoker.invoke(new GetConfigText(defaultsFile.absolutePath))
             if (defaultsText) {
-                queriesExternal = Invoker.invoke(new ToJson<QueriesConfig>(defaultsText, QueriesConfig.class))
+                jsonInstance = Invoker.invoke(new ToJson<TYPE_INPUT>(defaultsText, clazz))
             }
         }
+
+        return jsonInstance
+    }
+
+    private static <TYPE_OUTPUT> TYPE_OUTPUT getJsonInstance(Closure<String> filename) {
+        return getJsonInstance(TYPE_OUTPUT.class, filename)
+    }
+
+    private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
+
+        DefaultConfig queriesExternal = getJsonInstance(QueriesConfig.class, {
+            ___qryConfig.filename
+        })
 
         QueriesConfig newQueriesConfig = new QueriesConfig(
                 jdbcDriver: resolveValue(___qryConfig.jdbcDriver, queriesExternal, defaults.jdbcDriver,
@@ -236,16 +241,7 @@ class JsonConfigWrapper extends JsonConfig {
         if (!this.dbPoolConfig) {
             def dbPoolConfig = jsonConfig.dbPoolConfig?:new DBPoolConfig()
 
-            String dbPoolFilename = dbPoolConfig.filename ? dbPoolConfig.filename : null
-            DBPoolConfig dbPoolExternal = null
-
-            if (dbPoolFilename) {
-                File dbPoolFile = new File(dbPoolFilename)
-                String dbPoolText = Invoker.invoke(new GetConfigText(dbPoolFile.absolutePath))
-                if (dbPoolText) {
-                    dbPoolExternal = Invoker.invoke(new ToJson<DBPoolConfig>(dbPoolText, DBPoolConfig.class))
-                }
-            }
+            DBPoolConfig dbPoolExternal = getJsonInstance {dbPoolConfig.filename}
 
             this.dbPoolConfig = new DBPoolConfig(
                     minIdle: resolveValue(dbPoolConfig.minIdle, dbPoolExternal, DB_POOL_MIN_IDLE,

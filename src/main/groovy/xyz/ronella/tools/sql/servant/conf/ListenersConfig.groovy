@@ -37,4 +37,11 @@ class ListenersConfig {
      * Holds the script to call of the particular query has completed processing.
      */
     String onComplete
+
+    /**
+     * Holds the external filename of the listener configuration.
+     *
+     * @since 1.3.0
+     */
+    String filename
 }
