@@ -18,6 +18,8 @@ class Config {
     private String confDir
     private JsonConfigWrapper jsonWrapper
 
+    private static final String ENV_VAR_CONF_DIR = 'SQL_SERVANT_CONF_DIR'
+
     /**
      * Creates an instance of Config based on the default 'ss-default.json'
      */
@@ -43,6 +45,10 @@ class Config {
      *        (i.e. json).
      */
     Config(String confDir, String filename) {
+        String externalConf = System.getenv(ENV_VAR_CONF_DIR)
+        if (externalConf) {
+            confDir = "${externalConf}${File.separator}conf"
+        }
         this.confDir = "${new File(confDir?:'./conf').absolutePath}${File.separator}"
         this.filename = "${this.confDir}${filename?:'ss-default'}.json"
     }
