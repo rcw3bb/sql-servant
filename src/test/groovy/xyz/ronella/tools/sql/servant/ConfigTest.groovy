@@ -144,14 +144,12 @@ class ConfigTest {
         assert expected == testFilenameConfig.configAsJson.queries[0].listeners.onHeader
     }
 
-/*
     @Test
     void testListenerOnDataQueries() {
         File file = new File("${testFilenameConfig.configDirectory}/../listeners/sample-h2-data.bat")
         String expected = file.absolutePath
         assert expected == testFilenameConfig.configAsJson.queries[0].listeners.onData
     }
-*/
 
     @Test
     void testFilenameDBPoolMinIdle() {
@@ -164,15 +162,21 @@ class ConfigTest {
     }
 
     @Test
-    void testFilenameParamName1() {
+    void testFilenameParamNameExternal() {
         def params = testFilenameConfig.configAsJson.params
         assert null!=params.find({'param'==it.name})
     }
 
     @Test
-    void testFilenameParamName2() {
+    void testFilenameParamNameOverridden() {
         def params = testFilenameConfig.configAsJson.params
         assert null!=params.find({it.name=='overridden'})
+    }
+
+    @Test
+    void testFilenameParamNameOrdinary() {
+        def params = testFilenameConfig.configAsJson.params
+        assert null!=params.find({it.name=='ordinary'})
     }
 
 }

@@ -8,8 +8,12 @@
       "filename" : ".\\src\\test\\resources\\conf\\param-external.json"
     },
     {
-      "name" : "overridden",
-      "filename" : ".\\src\\test\\resources\\conf\\param-external.json"
+      "name": "overridden",
+      "filename": ".\\src\\test\\resources\\conf\\param-external.json"
+    },
+    {
+      "name" : "ordinary",
+      "description" : "Ordinary Parameter"
     }
   ],
   "dbPoolConfig" : {

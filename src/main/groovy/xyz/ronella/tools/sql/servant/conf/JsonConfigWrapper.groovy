@@ -88,14 +88,14 @@ class JsonConfigWrapper extends JsonConfig {
                 this.defaults.listeners.command = 'cmd.exe /c'
             }
 
-            initListeners(this.defaults.listeners)
+            resolveListeners(this.defaults.listeners)
 
             processWindowsAuthentication(this.defaults)
         }
         this.defaults
     }
 
-    private void initListeners(ListenersConfig listenersConfig) {
+    private void resolveListeners(ListenersConfig listenersConfig) {
         def listenerDirectory = config.listenerDirectory
 
         listenersConfig.with {
@@ -115,6 +115,50 @@ class JsonConfigWrapper extends JsonConfig {
                 }
             }
         }
+    }
+
+    private static final ListenersConfig processExternalListeners(final ListenersConfig listeners) {
+        ListenersConfig externalListeners = getJsonInstance {
+            listeners.filename
+        }
+
+        ListenersConfig newListener = listeners
+
+        if (externalListeners) {
+            newListener = new ListenersConfig(
+                    command: resolveValue(listeners.command, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.command}),
+                    onStart: resolveValue(listeners.onStart, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.onStart}),
+                    onHeader: resolveValue(listeners.onHeader, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.onHeader}),
+                    onData: resolveValue(listeners.onData, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.onData}),
+                    onComplete: resolveValue(listeners.onComplete, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.onComplete}),
+                    filter: resolveValue(listeners.filter, externalListeners, listeners.command,
+                            {___fileInstance->___fileInstance.filter}),
+            )
+        }
+
+        newListener
+    }
+
+    private static final ListenersConfig initListeners(ListenersConfig defaultListeners, ListenersConfig queryListeners) {
+
+        ListenersConfig newDefaultListeners = processExternalListeners(defaultListeners)
+        ListenersConfig newQueryListeners = processExternalListeners(queryListeners)
+
+        newQueryListeners.with {
+            command = command ?: newDefaultListeners.command
+            onStart = onStart ?: newDefaultListeners.onStart
+            onHeader = onHeader ?: newDefaultListeners.onHeader
+            onData = onData ?: newDefaultListeners.onData
+            onComplete = onComplete ?: newDefaultListeners.onComplete
+            filter = filter ?: newDefaultListeners.filter
+        }
+
+        newQueryListeners
     }
 
     private static boolean isWindows() {
@@ -189,24 +233,16 @@ class JsonConfigWrapper extends JsonConfig {
 
         processWindowsAuthentication(newQueriesConfig)
 
-        def defListeners = defaults.listeners
-        def newListeners = newQueriesConfig.listeners
+        newQueriesConfig.listeners = initListeners(defaults.listeners, newQueriesConfig.listeners)
 
-        newListeners.with {
-            command = command ?: defListeners.command
-            onStart = onStart ?: defListeners.onStart
-            onHeader = onHeader ?: defListeners.onHeader
-            onData = onData ?: defListeners.onData
-            onComplete = onComplete ?: defListeners.onComplete
-            filter = filter ?: defListeners.filter
-        }
+        def newListeners = newQueriesConfig.listeners
 
         if (newQueriesConfig.parallel && new Validate(new HasActiveListener()).check(newListeners)) {
             LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
             newQueriesConfig.parallel = false
         }
 
-        initListeners(newListeners)
+        resolveListeners(newListeners)
 
         def nextConfig=___qryConfig.next
         newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig
@@ -268,7 +304,10 @@ class JsonConfigWrapper extends JsonConfig {
 
             def newParams = new ArrayList<ParamConfig>()
             locParams.each { ___paramConfig ->
-                ParamConfig paramExternal = getJsonInstance(ParamConfig.class, {___paramConfig.filename})
+                ParamConfig paramExternal = getJsonInstance {
+                    ___paramConfig.filename
+                }
+
                 if (paramExternal) {
                    newParams.add(new ParamConfig(
                            name: resolveValue(___paramConfig.name, paramExternal, null,
@@ -283,7 +322,6 @@ class JsonConfigWrapper extends JsonConfig {
                     newParams.add(___paramConfig)
                 }
             }
-
             this.params = newParams as ParamConfig[]
         }
         this.params
