@@ -35,7 +35,7 @@ class ParamManager implements IValidator<String> {
         if (params) {
             params.forEach { ___key, ___value ->
                 String paramName = "${getParamToken(___key)}"
-                newQuery = query.replaceAll(paramName, ___value)
+                newQuery = newQuery.replaceAll(paramName, ___value)
             }
         }
         newQuery
