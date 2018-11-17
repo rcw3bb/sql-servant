@@ -264,8 +264,27 @@ class JsonConfigWrapper extends JsonConfig {
      */
     ParamConfig[] getParams() {
         if (!this.params) {
-            def params = jsonConfig.params?:[] as ParamConfig[]
-            this.params = params
+            def locParams = jsonConfig.params?:[] as ParamConfig[]
+
+            def newParams = new ArrayList<ParamConfig>()
+            locParams.each { ___paramConfig ->
+                ParamConfig paramExternal = getJsonInstance(ParamConfig.class, {___paramConfig.filename})
+                if (paramExternal) {
+                   newParams.add(new ParamConfig(
+                           name: resolveValue(___paramConfig.name, paramExternal, null,
+                                   {___fileInstance -> ___fileInstance.name}),
+                           description: resolveValue(___paramConfig. description, paramExternal, null,
+                                   {___fileInstance -> ___fileInstance.description}),
+                           value: resolveValue(___paramConfig.value, paramExternal, null,
+                                   {___fileInstance -> ___fileInstance.value}))
+                   )
+                }
+                else {
+                    newParams.add(___paramConfig)
+                }
+            }
+
+            this.params = newParams as ParamConfig[]
         }
         this.params
     }

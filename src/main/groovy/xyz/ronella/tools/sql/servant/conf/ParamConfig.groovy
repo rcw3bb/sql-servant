@@ -22,4 +22,11 @@ class ParamConfig {
      * Holds the value of the parameter.
      */
     String value
+
+    /**
+     * Holds the external filename of the param configuration.
+     *
+     * @since 1.3.0
+     */
+    String filename
 }

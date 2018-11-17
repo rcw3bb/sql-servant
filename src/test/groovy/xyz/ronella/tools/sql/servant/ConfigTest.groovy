@@ -163,4 +163,16 @@ class ConfigTest {
         assert 10 == testFilenameConfig.configAsJson.dbPoolConfig.maxIdle
     }
 
+    @Test
+    void testFilenameParamName1() {
+        def params = testFilenameConfig.configAsJson.params
+        assert null!=params.find({'param'==it.name})
+    }
+
+    @Test
+    void testFilenameParamName2() {
+        def params = testFilenameConfig.configAsJson.params
+        assert null!=params.find({it.name=='overridden'})
+    }
+
 }

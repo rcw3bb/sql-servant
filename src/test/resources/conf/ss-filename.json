@@ -3,6 +3,15 @@
     "filename": ".\\src\\test\\resources\\conf\\default-external.json",
     "parallel": true
   },
+  "params" : [
+    {
+      "filename" : ".\\src\\test\\resources\\conf\\param-external.json"
+    },
+    {
+      "name" : "overridden",
+      "filename" : ".\\src\\test\\resources\\conf\\param-external.json"
+    }
+  ],
   "dbPoolConfig" : {
     "maxIdle": 10,
     "filename" : ".\\src\\test\\resources\\conf\\db-pool-external.json"
