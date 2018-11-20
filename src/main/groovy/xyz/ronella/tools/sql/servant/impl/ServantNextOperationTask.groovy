@@ -67,7 +67,15 @@ class ServantNextOperationTask implements Callable<IStatus> {
                 isEverythingSuccessful = it.get().isSuccessful() && isEverythingSuccessful
             }
             if (isEverythingSuccessful) {
-                operation.perform(localFutures, config, qryConfig.next, cliArgs)
+
+                def qryConfigNext = qryConfig.next
+
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Description: ${qryConfigNext.description}")
+                    LOG.trace("Connection String: ${qryConfigNext.connectionString}")
+                }
+
+                operation.perform(localFutures, config, qryConfigNext, cliArgs)
                 isSuccessful = true
             }
             else {

@@ -23,7 +23,7 @@ import java.util.concurrent.Callable
  */
 class ServantOperationTask implements Callable<IStatus> {
 
-    public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
+    public final static def LOG = Logger.getLogger(ServantOperationTask.class.name)
 
     private Config config
     private QueriesConfig qryConfig
@@ -66,6 +66,11 @@ class ServantOperationTask implements Callable<IStatus> {
         }
 
         LOG.info("[${description}] Executing: ${query}")
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Description: ${qryConfig.description}")
+            LOG.trace("Connection String: ${qryConfig.connectionString}")
+        }
 
         def isProcessed = new ProcessedHolder().isProcessed(description)
 

@@ -117,6 +117,10 @@ class QueryServant {
                     List<Future<IStatus>> futures = new ArrayList<>()
                     try {
                         configJson.queries.each { qryConfig ->
+                            if (LOG.isTraceEnabled()) {
+                                LOG.trace("Description: ${qryConfig.description}")
+                                LOG.trace("Connection String: ${qryConfig.connectionString}")
+                            }
                             new OperationStrategy(args).runOperation(futures, config, qryConfig)
                         }
                         Iterator<Future<IStatus>> iterator=futures.iterator()
