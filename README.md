@@ -166,25 +166,27 @@ params | The expected parameters.
 
 Property | Type | Default | Value | Description
 ---------|------|---------|-------|------------
-jdbcDriver | String | | | Must have the fully qualified class name to use as a driver.
-mode | String | stmt | stmp, query, script, sqs | Use **stmt** _(i.e. the default)_, if the statement doesn't return a value. Use **query**, if the statement returns values. Use **script**, if the statements are stored in a separate script file and doesn't return a value. Use **sqs** _(i.e. single query script)_, if a select statement is stored in a script file.
-connectionString | String | | | The connection string of the database not including the username and password.
-username | String | | | Must have the valid username to use on connecting to the database.
-password | String | | | Must have the valid password to use on connecting to the database.
-windowsAuthentication | Boolean | false | | This property is for SQL server only. If set to **true**, it will use the currently signed-in user in Windows and will ignore the username and password properties. Thus, it is better not to provide the username and password.
-parallel | Boolean | false | | If set to **true**, the configured queries will be executed in parallel.
-listeners | ListenersConfig | | | Holds the listeners to be executed with the query processing.
+jdbcDriver | String | | | Must have the fully qualified class name to use as a driver. Overrides the entry in the externalized configuration.
+mode | String | stmt | stmp, query, script, sqs | Use **stmt** _(i.e. the default)_, if the statement doesn't return a value. Use **query**, if the statement returns values. Use **script**, if the statements are stored in a separate script file and doesn't return a value. Use **sqs** _(i.e. single query script)_, if a select statement is stored in a script file. Overrides the entry in the externalized configuration.
+connectionString | String | | | The connection string of the database not including the username and password. Overrides the entry in the externalized configuration.
+username | String | | | Must have the valid username to use on connecting to the database. Overrides the entry in the externalized configuration.
+password | String | | | Must have the valid password to use on connecting to the database. Overrides the entry in the externalized configuration.
+windowsAuthentication | Boolean | false | | This property is for SQL server only. If set to **true**, it will use the currently signed-in user in Windows and will ignore the username and password properties. Thus, it is better not to provide the username and password. Overrides the entry in the externalized configuration.
+parallel | Boolean | false | | If set to **true**, the configured queries will be executed in parallel. Overrides the entry in the externalized configuration.
+listeners | ListenersConfig | | | Holds the listeners to be executed with the query processing. Overrides the entry in the externalized configuration.
+filename | String | | | Must have the filename of the externalized configuration.
 
 ##### ListenersConfig Type
 
 Property | Type | Default | Description
 ---------|------|---------|------------
-filter | String | "% | The characters to be converted to underscore _(i.e. \_)_
-command | String | cmd.exe /c | The OS level command that will invoke the listeners. For the noarch package, command must always be configured.
-onStart | String | | The listener to be invoked upon starting of the query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **first time processing** respectively.
-onHeader | String | | The listener to be invoked upon doing the select query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **header** respectively.
-onData | String | | The listener to be invoked upon doing the select query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **record** respectively.
-onComplete | String | | The listener to be invoked upon completion of the query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **success status** respectively.
+filter | String | "% | The characters to be converted to underscore _(i.e. \_)_. Overrides the entry in the externalized configuration.
+command | String | cmd.exe /c | The OS level command that will invoke the listeners. For the noarch package, command must always be configured. Overrides the entry in the externalized configuration.
+onStart | String | | The listener to be invoked upon starting of the query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **first time processing** respectively. Overrides the entry in the externalized configuration.
+onHeader | String | | The listener to be invoked upon doing the select query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **header** respectively. Overrides the entry in the externalized configuration.
+onData | String | | The listener to be invoked upon doing the select query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **record** respectively. Overrides the entry in the externalized configuration.
+onComplete | String | | The listener to be invoked upon completion of the query processing. This listener will receive the arguments **current date**, **query description**, **the actual query** and **success status** respectively. Overrides the entry in the externalized configuration.
+filename | String | | Must have the filename of the externalized configuration.
 
 _Note: If the ListenersConfig was configured, the queries section that has it won't be executed in parallel._
 
@@ -192,33 +194,43 @@ _Note: If the ListenersConfig was configured, the queries section that has it wo
 
 Property | Type | Default | Description
 ---------|------|---------|-------------------
-jdbcDriver | String | defaults.jdbcDriver | Must have the fully qualified class name to use as a driver.
-mode | String | defaults.mode | If the query doesn't return a value and must not log in the log file, use **stmt** otherwise use **query**.
-connectionString | String | defaults.connectionString | The connection string of the database not including the username and password.
-username | String | defaults.username | Must have the valid username to use on connecting to the database.
-password | String | defaults.password | Must have the valid password to use on connecting to the database.
-windowsAuthentication | Boolean | defaults.windowsAuthentication | This property is for SQL server only. If set to **true**, it will use the currently signed-in user in Windows and will ignore the username and password properties. Thus, it is better not to provide the username and password.
-parallel | Boolean | defaults.parallel | If set to **true**, the configured queries will be executed in parallel.
-listeners | ListenersConfig | defaults.listeners | Holds the listeners to be executed with the query processing.
-description| String | Query \<index\> \[NEXT\] | Must have a meaningful description for the group of queries. Otherwise, it will be defaulted to Query with the \<index\> number based on it entry in the configuration file. If the \[NEXT\] is displayed, it is the depth of the configured next queries section.
-queries | String[] | | Must have all the SQL statements that can be executed in parallel.
-next | queries section | | If after the execution of the provided queries requires another set of queries, use this property to define another queries section.
+jdbcDriver | String | defaults.jdbcDriver | Must have the fully qualified class name to use as a driver. Overrides the entry in the externalized configuration.
+mode | String | defaults.mode | If the query doesn't return a value and must not log in the log file, use **stmt** otherwise use **query**. Overrides the entry in the externalized configuration.
+connectionString | String | defaults.connectionString | The connection string of the database not including the username and password. Overrides the entry in the externalized configuration.
+username | String | defaults.username | Must have the valid username to use on connecting to the database. Overrides the entry in the externalized configuration.
+password | String | defaults.password | Must have the valid password to use on connecting to the database. Overrides the entry in the externalized configuration.
+windowsAuthentication | Boolean | defaults.windowsAuthentication | This property is for SQL server only. If set to **true**, it will use the currently signed-in user in Windows and will ignore the username and password properties. Thus, it is better not to provide the username and password. Overrides the entry in the externalized configuration.
+parallel | Boolean | defaults.parallel | If set to **true**, the configured queries will be executed in parallel. Overrides the entry in the externalized configuration.
+listeners | ListenersConfig | defaults.listeners | Holds the listeners to be executed with the query processing. Overrides the entry in the externalized configuration.
+description| String | Query \<index\> \[NEXT\] | Must have a meaningful description for the group of queries. Otherwise, it will be defaulted to Query with the \<index\> number based on it entry in the configuration file. If the \[NEXT\] is displayed, it is the depth of the configured next queries section. Overrides the entry in the externalized configuration.
+queries | String[] | | Must have all the SQL statements that can be executed in parallel. Overrides the entry in the externalized configuration.
+next | queries section | | If after the execution of the provided queries requires another set of queries, use this property to define another queries section. Overrides the entry in the externalized configuration.
+filename | String | | Must have the filename of the externalized configuration.
 
 #### dbPoolConfig Section
 
 Property | Type | Default | Description
 ---------|------|---------|-------------------
-minIdle | Integer | 1 | The minimum number of DataSource instances that are always ready to create a connection.
-maxIdle | Integer | 1 | The maximum number of DataSource instances that can be added from the minIdle property.
-maxOpenPreparedStatements | Integer | 50 | The maximum number of PreparedStatement instances before blocking.
+minIdle | Integer | 1 | The minimum number of DataSource instances that are always ready to create a connection. Overrides the entry in the externalized configuration.
+maxIdle | Integer | 1 | The maximum number of DataSource instances that can be added from the minIdle property. Overrides the entry in the externalized configuration.
+maxOpenPreparedStatements | Integer | 50 | The maximum number of PreparedStatement instances before blocking. Overrides the entry in the externalized configuration.
+filename | String | | Must have the filename of the externalized configuration. 
 
 #### params Section
 
 Property | Type | Description
 ---------|------|----------------------------
-name | String | The name of the expected parameter.
-description | String | A user friendly description of the parameter.
-value | String | The default value of the parameter. 
+name | String | The name of the expected parameter. Overrides the entry in the externalized configuration.
+description | String | A user friendly description of the parameter. Overrides the entry in the externalized configuration.
+value | String | The default value of the parameter. Overrides the entry in the externalized configuration.
+filename | String | Must have the filename of the externalized configuration.
+
+#### SQL_SERVANT_CONF_DIR Environment Variable
+
+Set the **SQL_SERVANT_CONF_DIR** environment variable to have a different location for the following configuration folders:
+- conf
+- listeners
+- scripts
 
 ## Usage
 
