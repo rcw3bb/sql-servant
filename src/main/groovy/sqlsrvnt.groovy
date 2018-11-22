@@ -34,7 +34,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         v longOpt : 'version', 'Shows the current version'
         c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
         e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
-        P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to parameters found in the configuration')
+        P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to the query parameters found in the configuration. This can be used multiple times.')
     }
 
     def options = cli.parse(args)
