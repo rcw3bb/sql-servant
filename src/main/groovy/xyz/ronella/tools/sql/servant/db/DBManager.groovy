@@ -135,6 +135,7 @@ class DBManager {
                         }
 
                         while (rs.next()) {
+                            rsCount++
                             StringBuilder sbHdr = new StringBuilder()
                             StringBuilder sbRec = new StringBuilder()
                             metaData.with {
@@ -157,7 +158,6 @@ class DBManager {
                             if (listeners.onData) {
                                 runCmd(listeners.onData, qryConfig.description, statement, rawData)
                             }
-                            rsCount++
                             firstLoad = false
                         }
                     }
