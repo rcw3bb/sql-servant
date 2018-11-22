@@ -125,6 +125,7 @@ class DBManager {
                 case QueryMode.SINGLE_QUERY_SCRIPT:
                     ResultSet rs = stmt.executeQuery()
                     def metaData = rs.metaData
+                    long rsCount = 0
                     try {
                         def firstLoad = true
                         def listeners = qryConfig.listeners
@@ -156,16 +157,19 @@ class DBManager {
                             if (listeners.onData) {
                                 runCmd(listeners.onData, qryConfig.description, statement, rawData)
                             }
-
+                            rsCount++
                             firstLoad = false
                         }
                     }
                     finally {
+                        LOG.info("[${qryConfig.description}] ${rsCount} rows")
                         try {rs.close()} catch (Exception e) {}
                     }
                     break
                 default:
                     stmt.execute()
+                    try {LOG.info("[${qryConfig.description}] ${stmt.getUpdateCount()} rows affected")}
+                    catch(Exception e) {}
                     break
             }
         }
