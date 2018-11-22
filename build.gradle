@@ -106,6 +106,9 @@ task pack(type: Zip, dependsOn: 'jar') {
                                         'drivers' : getDrvsNoArch(),
                                         'java.library.path' : '']
     }
+    from(file(projectDir)) {
+        include '*.md'
+    }
     from(configurations.compile) {
         into 'libs'
     }
@@ -141,6 +144,9 @@ task packMSSQLx64(type: Zip, dependsOn: 'jar') {
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvsMSSQL(),
                                         'java.library.path' : '-Djava.library.path=%DRVS_DIR%']
+    }
+    from(file(projectDir)) {
+        include '*.md'
     }
     from(configurations.compile) {
         into 'libs'
@@ -184,6 +190,9 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
                                         'libraries' : getLibs(),
                                         'drivers' : getDrvsMSSQL(),
                                         'java.library.path' : '-Djava.library.path=%DRVS_DIR%']
+    }
+    from(file(projectDir)) {
+        include '*.md'
     }
     from(configurations.compile) {
         into 'libs'
