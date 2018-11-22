@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 : 2018-11-22
+### Added
+- Defaults, Queries, DBPoolConfig, Params and ListenersConfig now support **filename** property in the configuration file.
+- Configuration location can now be customized using the **SQL_SERVANT_CONF_DIR** environment variable.
+- Output the **rows affected** in the log.
+
 ## 1.2.0 : 2018-10-21
 ### Added
 - Support to script mode.
