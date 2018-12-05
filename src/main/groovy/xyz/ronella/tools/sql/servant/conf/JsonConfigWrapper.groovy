@@ -208,6 +208,9 @@ class JsonConfigWrapper extends JsonConfig {
             ___qryConfig.filename
         })
 
+        String ___description = resolveValue(___qryConfig.description, queriesExternal, description,
+                {___fileInstance -> ___fileInstance.description})
+
         QueriesConfig newQueriesConfig = new QueriesConfig(
                 jdbcDriver: resolveValue(___qryConfig.jdbcDriver, queriesExternal, defaults.jdbcDriver,
                         {___fileInstance -> ___fileInstance.jdbcDriver}),
@@ -224,8 +227,7 @@ class JsonConfigWrapper extends JsonConfig {
                 windowsAuthentication: resolveValue(___qryConfig.windowsAuthentication, queriesExternal,
                         defaults.windowsAuthentication,
                         {___fileInstance -> ___fileInstance.windowsAuthentication}),
-                description: resolveValue(description, queriesExternal, description,
-                        {___fileInstance -> ___fileInstance.description}),
+                description: ___description,
                 queries: resolveValue(___qryConfig.queries, queriesExternal, defaults.queries,
                         {___fileInstance -> ___fileInstance.queries}),
                 listeners: resolveValue(___qryConfig.listeners, queriesExternal, defaults.listeners,
@@ -238,7 +240,7 @@ class JsonConfigWrapper extends JsonConfig {
         def newListeners = newQueriesConfig.listeners
 
         if (newQueriesConfig.parallel && new Validate(new HasActiveListener()).check(newListeners)) {
-            LOG.info("[${description}] Converting to non-parallel processing because of active listener.")
+            LOG.info("[${___description}] Converting to non-parallel processing because of active listener.")
             newQueriesConfig.parallel = false
         }
 
@@ -247,7 +249,7 @@ class JsonConfigWrapper extends JsonConfig {
         def nextConfig=resolveValue(___qryConfig.next, queriesExternal, null
                 , {___fileInstance -> ___fileInstance.next})
         newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig
-                , nextConfig.description ?: "${description} [NEXT]", newQueriesConfig) : null
+                , nextConfig.description ?: "${___description} [NEXT]", newQueriesConfig) : null
 
         return newQueriesConfig
     }

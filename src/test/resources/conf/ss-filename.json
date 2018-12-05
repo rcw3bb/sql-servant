@@ -21,7 +21,6 @@
     "filename" : ".\\src\\test\\resources\\conf\\db-pool-external.json"
   },
   "queries": [{
-      "description" : "Overridden description",
       "filename" : ".\\src\\test\\resources\\conf\\queries-external.json"
     }
   ]

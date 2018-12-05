@@ -129,7 +129,7 @@ class ConfigTest {
 
     @Test
     void testFilenameDescription() {
-        assert 'Overridden description'==testFilenameConfig.configAsJson.queries[0].description
+        assert 'Original Description'==testFilenameConfig.configAsJson.queries[0].description
     }
 
     @Test
