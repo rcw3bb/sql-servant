@@ -244,7 +244,8 @@ class JsonConfigWrapper extends JsonConfig {
 
         resolveListeners(newListeners)
 
-        def nextConfig=___qryConfig.next
+        def nextConfig=resolveValue(___qryConfig.next, queriesExternal, null
+                , {___fileInstance -> ___fileInstance.next})
         newQueriesConfig.next= nextConfig ? createNewQueryConfig(nextConfig
                 , nextConfig.description ?: "${description} [NEXT]", newQueriesConfig) : null
 

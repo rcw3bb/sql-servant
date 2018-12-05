@@ -138,6 +138,16 @@ class ConfigTest {
     }
 
     @Test
+    void testFilenameQueriesNextNotNull() {
+        assert null != testFilenameConfig.configAsJson.queries[0].next
+    }
+
+    @Test
+    void testFilenameQueriesNextMode() {
+        assert 'script'==testFilenameConfig.configAsJson.queries[0].next.mode
+    }
+
+    @Test
     void testListenerOnHeaderQueries() {
         File file = new File("${testFilenameConfig.configDirectory}/../listeners/sample-h2-datum.bat")
         String expected = file.absolutePath
