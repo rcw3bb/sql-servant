@@ -44,11 +44,17 @@ class Config {
      * @param filename The filename of the configuration file excluding the extension
      *        (i.e. json).
      */
-    Config(String confDir, String filename) {
+    Config(String confDir, String filename, boolean suffix = true) {
         String externalConf = System.getenv(ENV_VAR_CONF_DIR)
-        if (externalConf) {
-            confDir = "${externalConf}${File.separator}conf"
+
+        if (!confDir && externalConf) {
+            confDir = externalConf
         }
+
+        if (suffix && confDir) {
+            confDir = "${confDir}${File.separator}conf"
+        }
+
         this.confDir = "${new File(confDir?:'./conf').absolutePath}${File.separator}"
         this.filename = "${this.confDir}${filename?:'ss-default'}.json"
     }

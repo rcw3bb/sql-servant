@@ -8,10 +8,10 @@ class ConfigTest {
 
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase()
 
-    final def testDefaultConfig = new Config('./src/test/resources/conf','ss-default')
-    final def testEmptyDefaultConfig = new Config('./src/test/resources/conf','empty')
-    final def testReallyEmptyDefConfig = new Config('./src/test/resources/conf','really-empty')
-    final def testFilenameConfig = new Config('./src/test/resources/conf','ss-filename')
+    final def testDefaultConfig = new Config('./src/test/resources','ss-default')
+    final def testEmptyDefaultConfig = new Config('./src/test/resources','empty')
+    final def testReallyEmptyDefConfig = new Config('./src/test/resources','really-empty')
+    final def testFilenameConfig = new Config('./src/test/resources','ss-filename')
 
     @Test
     void testDefaultConfig() {

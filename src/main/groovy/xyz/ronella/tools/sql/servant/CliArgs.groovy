@@ -36,4 +36,11 @@ class CliArgs {
      * @since 1.2.0
      */
     Map<String, String> params
+
+    /**
+     * Holds the configuration directory to search for configuration.
+     *
+     * @since 1.4.0
+     */
+    String confDir
 }

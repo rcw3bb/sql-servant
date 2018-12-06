@@ -28,7 +28,7 @@ class ConfigByEnv {
     Config createConfigByEnv(CliArgs cliArgs) {
 
         if (cliArgs.environment) {
-            Config confByEnv = new Config(config.configDirectory,"${cliArgs.config}.${cliArgs.environment}")
+            Config confByEnv = new Config(config.configDirectory,"${cliArgs.config}.${cliArgs.environment}", false)
             if (confByEnv.configAsJson) {
                 return confByEnv
             }

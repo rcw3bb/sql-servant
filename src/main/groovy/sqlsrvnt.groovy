@@ -26,13 +26,14 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         }
     }
 
-    def cli = new CliBuilder(usage:'sqlsrvnt -[hnpv] [-c <config-name>] [-e <environment>] [-P <parameter=value>]')
+    def cli = new CliBuilder(usage:'sqlsrvnt -[hnpv] [-c <config-name>] [-e <environment>] [-P <parameter=value>] [-cd config-dir]')
     cli.with {
         h longOpt : 'help', 'Show usage information'
         n longOpt : 'noop', 'Run without actually performing the queries'
         p longOpt : 'parallel', 'Run the actual queries in parallel'
         v longOpt : 'version', 'Shows the current version'
         c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
+        cd longOpt : 'confdir', args: 1, argName: 'config-dir', 'Find the configuration in the specified directory'
         e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
         P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to the query parameters found in the configuration. This can be used multiple times.')
     }
@@ -45,6 +46,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
     def optionsLogic = [{options.n} : {cliArgs.noop = true},
                         {options.p} : {cliArgs.parallel = true},
                         {options.c} : {cliArgs.config = options.c},
+                        {options.cd} : {cliArgs.confDir = options.cd},
                         {options.e} : {cliArgs.environment = options.e},
                         {options.P} : {
                             int idx = 0
@@ -72,7 +74,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
             }
         }
 
-        def config = new ConfigByEnv(new Config(cliArgs.config)).createConfigByEnv(cliArgs)
+        def config = new ConfigByEnv(new Config(cliArgs.confDir, cliArgs.config)).createConfigByEnv(cliArgs)
         new QueryServant(config).perform(cliArgs)
     }
 }

@@ -6,7 +6,7 @@ import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
 class ScriptQueryParserTest {
 
-    final def testDefaultConfig = new Config('./src/test/resources/conf','sample-scripts-conf')
+    final def testDefaultConfig = new Config('./src/test/resources','sample-scripts-conf')
 
     @Test(expected = ScriptQueryParserException.class)
     void testNonExistingScript() {
