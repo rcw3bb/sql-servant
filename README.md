@@ -232,6 +232,8 @@ Set the **SQL_SERVANT_CONF_DIR** environment variable to have a different locati
 - listeners
 - scripts
 
+_Note: This environment variable can be overridden by the -cd command line argument._
+
 ## Usage
 
 To know the usage, execute the following on a terminal:

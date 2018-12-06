@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 : TBA
+### Added
+- Configuration directory can now be changed using **-cd command** line argument. This argument takes precedence over **SQL_SERVANT_CONF_DIR** environment variable.
+
+### Fixed
+- The _next_ attribute of the queries section is now being processed even if it is in an external file.
+- The _description_ attribute of the queries section in an external file is now being considered.
+
 ## 1.3.0 : 2018-11-22
 ### Added
 - Defaults, Queries, DBPoolConfig, Params and ListenersConfig now support **filename** property in the configuration file.
