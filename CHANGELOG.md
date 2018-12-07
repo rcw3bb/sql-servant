@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.4.0 : TBA
+## 1.4.0 : 2018-12-08
 ### Added
 - Configuration directory can now be changed using **-cd command** line argument. This argument takes precedence over **SQL_SERVANT_CONF_DIR** environment variable.
 
