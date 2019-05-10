@@ -64,6 +64,17 @@ class ConfigTest {
     }
 
     @Test
+    void testDefaultConfigQueryWinAuthTrue() {
+        assert testDefaultConfig.configAsJson.queries[0].windowsAuthentication
+    }
+
+    @Test
+    void testDefaultConfigQueryWinAuthFalse() {
+        print("test")
+        assert !testDefaultConfig.configAsJson.queries[2].next.windowsAuthentication
+    }
+
+    @Test
     void testDefaultConfigNextNextQueryDescription() {
         assert 'Query 3 [NEXT] [NEXT]'==testDefaultConfig.configAsJson.queries[2].next.next.description
     }

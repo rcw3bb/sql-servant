@@ -167,7 +167,7 @@ params | The expected parameters.
 Property | Type | Default | Value | Description
 ---------|------|---------|-------|------------
 jdbcDriver | String | | | Must have the fully qualified class name to use as a driver. Overrides the entry in the externalized configuration.
-mode | String | stmt | stmp, query, script, sqs | Use **stmt** _(i.e. the default)_, if the statement doesn't return a value. Use **query**, if the statement returns values. Use **script**, if the statements are stored in a separate script file and doesn't return a value. Use **sqs** _(i.e. single query script)_, if a select statement is stored in a script file. Overrides the entry in the externalized configuration.
+mode | String | stmt | stmt, query, script, sqs | Use **stmt** _(i.e. the default)_, if the statement doesn't return a value. Use **query**, if the statement returns values. Use **script**, if the statements are stored in a separate script file and doesn't return a value. Use **sqs** _(i.e. single query script)_, if a select statement is stored in a script file. Overrides the entry in the externalized configuration.
 connectionString | String | | | The connection string of the database not including the username and password. Overrides the entry in the externalized configuration.
 username | String | | | Must have the valid username to use on connecting to the database. Overrides the entry in the externalized configuration.
 password | String | | | Must have the valid password to use on connecting to the database. Overrides the entry in the externalized configuration.

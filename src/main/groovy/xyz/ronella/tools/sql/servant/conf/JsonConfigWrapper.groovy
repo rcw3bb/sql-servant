@@ -49,7 +49,7 @@ class JsonConfigWrapper extends JsonConfig {
                                                                                TYPE_OUTPUT defaultValue,
                                                                                Closure<TYPE_OUTPUT> fileInstanceValue
     ) {
-        return defaultInstanceValue?:(fileInstance!=null?fileInstanceValue(fileInstance):defaultValue)?:defaultValue
+        return defaultInstanceValue==null ? ((fileInstance!=null?fileInstanceValue(fileInstance):defaultValue)?:defaultValue) : defaultInstanceValue
     }
 
     /**

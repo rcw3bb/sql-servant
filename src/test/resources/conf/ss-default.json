@@ -4,7 +4,8 @@
     "username": "",
     "password": "",
     "mode": "query",
-    "parallel": false
+    "parallel": false,
+    "windowsAuthentication" : true
   },
   "dbPoolConfig" : {
     "minIdle": 5,
@@ -23,6 +24,7 @@
     {
       "queries": ["select count(*) from test3"],
       "next" : {
+        "windowsAuthentication" : false,
         "queries" : ["select count(*) from test33"],
         "next" : {
           "queries" : ["select count(*) from test333"]
