@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.1 : 2019-05-10
+### Fixed
+- The _null_ is treated as false when resolving value.
+
+### Changed
+- README.md _default mode value_ correction.
+
 ## 1.4.0 : 2018-12-08
 ### Added
 - Configuration directory can now be changed using **-cd command** line argument. This argument takes precedence over **SQL_SERVANT_CONF_DIR** environment variable.
