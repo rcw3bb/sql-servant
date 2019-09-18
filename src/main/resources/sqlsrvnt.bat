@@ -13,4 +13,6 @@ set DRVS=@drivers@
 set MAIN_JAR=%LIBS_DIR%\sql-servant-@app.version@.jar
 set CLASSPATH=%SCRIPT_DIR%;%LIBS%;%MAIN_JAR%;%DRVS%
 
+cd /d %SCRIPT_DIR%
+
 java -cp %CLASSPATH% @java.library.path@ sqlsrvnt %*
