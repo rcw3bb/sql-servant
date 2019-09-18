@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 : 2019-09-18
+### Changed
+- Update the batch script to change to the main script directory first before executing any command.
+
 ## 1.4.1 : 2019-05-10
 ### Fixed
 - The _null_ is treated as false when resolving value.
