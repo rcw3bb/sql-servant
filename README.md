@@ -9,17 +9,17 @@ A simple tool for running a configured SQL statements.
 
 ### Prerequisites
 
-Java 8
+Java 11
 
 ### Installing
 
 1. Ensure that you can connect to the internet. This is for downloading gradle and the dependencies.
-2. Ensure that you are running Java 8 *(e.g. 1.8.0_112)*. 
-You can run the following command if you like to validate your java version:
+2. Ensure that you are running Java 11. 
+  You can run the following command if you like to validate your java version:
 
-    ```
-    java -version
-    ```
+   ```
+   java -version
+   ```
 
 3. Open a terminal and run the following command:
 
@@ -42,7 +42,7 @@ The output can be found in following directory:
 ```
 build/reports/tests/test directory.
 ```
-    
+
 ## Packaging
 
 On a terminal, run the following command:

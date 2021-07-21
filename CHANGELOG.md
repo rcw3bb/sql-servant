@@ -1,6 +1,17 @@
 # Changelog
 
+## 2.0.0 : 2021-07-22
+
+### New
+
+* Java 11 compatibility.
+
+### Changed
+
+* Dependencies update.
+
 ## 1.4.2 : 2019-09-18
+
 ### Changed
 - Update the batch script to change to the main script directory first before executing any command.
 
