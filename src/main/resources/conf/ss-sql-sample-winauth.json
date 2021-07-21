@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "connectionString": "jdbc:sqlserver://localhost:1434;databaseName=<YOUR_DB_NAME>",
+    "connectionString": "jdbc:sqlserver://localhost:1433;databaseName=<YOUR_DB_NAME>",
     "windowsAuthentication": true
   },
   "dbPoolConfig" : {
