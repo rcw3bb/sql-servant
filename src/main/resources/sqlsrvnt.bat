@@ -1,6 +1,6 @@
 @echo off
 
-rem Requires Java 8
+rem Requires Java 11
 
 set SCRIPT_DIR=%~dp0
 set LIBS_DIR=%SCRIPT_DIR%libs

@@ -159,8 +159,8 @@ task packMSSQLx64(type: Zip, dependsOn: 'jar') {
     from(configurations.mssql) {
         into 'drivers'
     }
-    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_6.0/x64")) {
-        include 'sql*.dll'
+    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_9.2/x64")) {
+        include 'mssql*.dll'
         into 'drivers'
     }
     from(file("${buildDir}/libs")) {
@@ -206,8 +206,8 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
     from(configurations.mssql) {
         into 'drivers'
     }
-    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_6.0/x86")) {
-        include 'sql*.dll'
+    from(file("${sourceSets.main.resources.srcDirs.first()}/drivers/sqljdbc_9.2/x86")) {
+        include 'mssql*.dll'
         into 'drivers'
     }
     from(file("${buildDir}/libs")) {
