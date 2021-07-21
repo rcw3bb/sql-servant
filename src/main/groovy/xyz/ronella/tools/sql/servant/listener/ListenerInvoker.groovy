@@ -3,6 +3,8 @@ package xyz.ronella.tools.sql.servant.listener
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
+import java.text.SimpleDateFormat
+
 /**
  * The main class that is responsible for invoking the listener.
  *
@@ -26,7 +28,8 @@ class ListenerInvoker {
     }
 
     private static String getDateArg() {
-        new Date().format('dd-MM-yyyy')
+        def dateFormatter = new SimpleDateFormat('dd-MM-yyyy')
+        dateFormatter.format(new Date())
     }
 
     private String getFilter() {
