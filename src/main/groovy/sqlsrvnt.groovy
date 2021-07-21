@@ -1,3 +1,4 @@
+import groovy.cli.picocli.CliBuilder
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.ConfigByEnv
@@ -52,7 +53,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
                             int idx = 0
                             cliArgs.params = options.Ps.inject([:], {___result, ___item ->
                                 if (++idx % 2 == 0) {
-                                    ___result.put(options.Ps.get(idx-2), ___item)
+                                    ___result.put(options.Ps[idx-2], ___item)
                                 }
                                 ___result
                             })
