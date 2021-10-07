@@ -1,13 +1,14 @@
 package xyz.ronella.tools.sql.servant
 
 import org.h2.tools.DeleteDbFiles
+import org.junit.Assert
 import org.junit.Test
 
 class QueryServantTest {
 
-    final def testDefaultQueryServant = new QueryServant(new Config('./src/test/resources/conf','ss-default'))
-    final def testH2QueryServant = new QueryServant(new Config('./src/test/resources/conf','sample-h2'))
-    final def testH2ErrorQueryServant = new QueryServant(new Config('./src/test/resources/conf','error-h2'))
+    final def testDefaultQueryServant = new QueryServant(new Config('./src/test/resources','ss-default'))
+    final def testH2QueryServant = new QueryServant(new Config('./src/test/resources','sample-h2'))
+    final def testH2ErrorQueryServant = new QueryServant(new Config('./src/test/resources','error-h2'))
 
     @Test
     void testOptionNoop() {
@@ -25,7 +26,7 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%']))
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true))
         }
         finally {
             eraseDB.call()
@@ -41,11 +42,52 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2ErrorQueryServant.perform(new CliArgs())
+            testH2ErrorQueryServant.perform(new CliArgs(ignoreExecutionException: true))
         }
         finally {
             eraseDB.call()
         }
     }
 
+    @Test
+    void testWithH2DBHasError() {
+        def eraseDB = {
+            if (new File('./src/test/db/test1.mv.db').exists()) {
+                DeleteDbFiles.execute('./src/test/db/', 'test1', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test2', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test3', true)
+            }
+        }
+        try {
+            QueryServant.hasError = true
+            eraseDB.call()
+            Assert.assertThrows(ExecutionException.class) {
+                testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%']))
+            }
+        }
+        finally {
+            QueryServant.hasError = false
+            eraseDB.call()
+        }
+    }
+
+    @Test
+    void testWithH2DBHasErrorIgnore() {
+        def eraseDB = {
+            if (new File('./src/test/db/test1.mv.db').exists()) {
+                DeleteDbFiles.execute('./src/test/db/', 'test1', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test2', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test3', true)
+            }
+        }
+        try {
+            QueryServant.hasError = true
+            eraseDB.call()
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true))
+        }
+        finally {
+            QueryServant.hasError = false
+            eraseDB.call()
+        }
+    }
 }

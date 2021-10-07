@@ -43,4 +43,11 @@ class CliArgs {
      * @since 1.4.0
      */
     String confDir
+
+    /**
+     * Specifies to ignore ExecutionException
+     * 
+     * @since 2.1.0
+     */
+    boolean ignoreExecutionException
 }

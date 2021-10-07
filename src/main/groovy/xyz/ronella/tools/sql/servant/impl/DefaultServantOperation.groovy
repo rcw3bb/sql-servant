@@ -4,8 +4,10 @@ import org.apache.log4j.Logger
 
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.ExecutionException
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.QueryServant
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
@@ -81,6 +83,10 @@ class DefaultServantOperation implements IOperation {
             }
         } else {
             LOG.warn("[${description}] Premature exit")
+        }
+
+        if (!cliArgs.ignoreExecutionException && QueryServant.hasError) {
+            throw new ExecutionException()
         }
     }
 }

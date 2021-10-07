@@ -21,6 +21,7 @@ class QueryServant {
 
     public final static def LOG = Logger.getLogger(QueryServant.class.name)
     private final static Lock LOCK = new ReentrantLock()
+    public static def hasError = false
 
     private static int usageLevel
 

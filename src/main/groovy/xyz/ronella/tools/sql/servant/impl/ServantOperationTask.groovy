@@ -2,6 +2,7 @@ package xyz.ronella.tools.sql.servant.impl
 
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.ExecutionException
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
 import xyz.ronella.tools.sql.servant.db.QueryMode
@@ -98,9 +99,11 @@ class ServantOperationTask implements Callable<IStatus> {
             isSuccessful = true
         }
         catch(Exception e) {
+            var message = "[${description}] Failed running: ${query}"
             LOG.error(e.fillInStackTrace())
-            LOG.info("[${description}] Failed running: ${query}")
+            LOG.info(message)
             invokeComplete(description, query, 'failed')
+            QueryServant.hasError = true
         }
         finally {
             LOG.info("[${description}] Elapse: [${new Date().time - startTime}ms]")

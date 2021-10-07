@@ -31,6 +31,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
     cli.with {
         h longOpt : 'help', 'Show usage information'
         n longOpt : 'noop', 'Run without actually performing the queries'
+        iee longOpt : 'no-execution-exception', 'Ignore the ExecutionException that can be thrown at the end.'
         p longOpt : 'parallel', 'Run the actual queries in parallel'
         v longOpt : 'version', 'Shows the current version'
         c longOpt : 'config', args: 1, argName: 'config-name', 'Run a different configuration other than the default'
@@ -44,11 +45,13 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         return
     }
 
-    def optionsLogic = [{options.n} : {cliArgs.noop = true},
+    def optionsLogic = [
+                        {options.n} : {cliArgs.noop = true},
                         {options.p} : {cliArgs.parallel = true},
                         {options.c} : {cliArgs.config = options.c},
                         {options.cd} : {cliArgs.confDir = options.cd},
                         {options.e} : {cliArgs.environment = options.e},
+                        {options.iee} : {cliArgs.ignoreExecutionException = options.iee},
                         {options.P} : {
                             int idx = 0
                             cliArgs.params = options.Ps.inject([:], {___result, ___item ->
