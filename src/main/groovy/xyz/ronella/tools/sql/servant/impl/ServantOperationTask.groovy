@@ -4,6 +4,7 @@ import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.ExecutionException
 import xyz.ronella.tools.sql.servant.IStatus
+import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
 import xyz.ronella.tools.sql.servant.db.QueryMode
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
@@ -104,6 +105,7 @@ class ServantOperationTask implements Callable<IStatus> {
             LOG.info(message)
             invokeComplete(description, query, 'failed')
             QueryServant.hasError = true
+            throw new TaskException(message)
         }
         finally {
             LOG.info("[${description}] Elapse: [${new Date().time - startTime}ms]")

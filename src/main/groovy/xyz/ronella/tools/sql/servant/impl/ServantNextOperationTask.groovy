@@ -6,6 +6,7 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.QueryServant
+import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
 import java.util.concurrent.Callable
@@ -64,7 +65,14 @@ class ServantNextOperationTask implements Callable<IStatus> {
         try {
             boolean isEverythingSuccessful = true
             localFutures.each {
-                isEverythingSuccessful = it.get().isSuccessful() && isEverythingSuccessful
+                try {
+                    isEverythingSuccessful = it.get().isSuccessful() && isEverythingSuccessful
+                }
+                catch(Exception exception) {
+                    if (!cliArgs.ignoreTaskException) {
+                        throw new TaskException(exception)
+                    }
+                }
             }
             if (isEverythingSuccessful) {
 

@@ -46,8 +46,15 @@ class CliArgs {
 
     /**
      * Specifies to ignore ExecutionException
-     * 
+     *
      * @since 2.1.0
      */
     boolean ignoreExecutionException
+
+    /**
+     * Specifies to ignore TaskException
+     *
+     * @since 2.1.0
+     */
+    boolean ignoreTaskException
 }

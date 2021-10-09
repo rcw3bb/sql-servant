@@ -8,6 +8,7 @@ import xyz.ronella.tools.sql.servant.ExecutionException
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.QueryServant
+import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
@@ -67,7 +68,14 @@ class DefaultServantOperation implements IOperation {
                         futures.add(future)
                     }
                 } else {
-                    continueNext = servantTask.call().isSuccessful() && continueNext
+                    try {
+                        continueNext = servantTask.call().isSuccessful() && continueNext
+                    }
+                    catch (TaskException te) {
+                        if (!cliArgs.ignoreTaskException) {
+                            throw te
+                        }
+                    }
                 }
             }
         }
@@ -78,7 +86,14 @@ class DefaultServantOperation implements IOperation {
                 if (qryConfig.parallel) {
                     futures.add(ParallelEngine.instance.process(nextTask))
                 } else {
-                    nextTask.call()
+                    try {
+                        nextTask.call()
+                    }
+                    catch (TaskException te) {
+                        if (!cliArgs.ignoreTaskException) {
+                            throw te
+                        }
+                    }
                 }
             }
         } else {

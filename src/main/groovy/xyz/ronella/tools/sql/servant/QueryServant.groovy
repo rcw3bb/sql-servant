@@ -126,11 +126,18 @@ class QueryServant {
                         }
                         Iterator<Future<IStatus>> iterator=futures.iterator()
                         while (iterator.hasNext()) {
-                            iterator.next().get()
+                            try {
+                                iterator.next().get()
+                            }
+                            catch(Exception exception) {
+                                if (!args.ignoreTaskException) {
+                                    throw new TaskException(exception)
+                                }
+                            }
                         }
                     }
                     finally {
-                        while(usageLevel!=0) {
+                        while (usageLevel != 0) {
                             Thread.sleep(500)
                         }
                         if (isStarted()) {

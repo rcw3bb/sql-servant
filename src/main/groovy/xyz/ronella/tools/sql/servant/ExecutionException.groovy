@@ -1,7 +1,7 @@
 package xyz.ronella.tools.sql.servant
 
 /**
- * The exception thrown when the processing of statement failed.
+ * The exception thrown when at least one statement failed.
  *
  * @author Ron Webb
  * @since 2.1.0
