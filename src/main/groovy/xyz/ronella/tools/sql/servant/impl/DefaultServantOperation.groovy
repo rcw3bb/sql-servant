@@ -65,7 +65,6 @@ class DefaultServantOperation implements IOperation {
                         }
                         def future = process(servantTask)
                         localFutures.add(future)
-                        futures.add(future)
                     }
                 } else {
                     try {
