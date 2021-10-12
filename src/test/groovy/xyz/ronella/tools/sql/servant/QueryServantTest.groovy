@@ -117,4 +117,22 @@ class QueryServantTest {
             eraseDB.call()
         }
     }
+
+    @Test
+    void testWithH2DBWithEnv() {
+        def eraseDB = {
+            if (new File('./src/test/db/test1.mv.db').exists()) {
+                DeleteDbFiles.execute('./src/test/db/', 'test1', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test2', true)
+                DeleteDbFiles.execute('./src/test/db/', 'test3', true)
+            }
+        }
+        try {
+            eraseDB.call()
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true, ignoreTaskException: true))
+        }
+        finally {
+            eraseDB.call()
+        }
+    }
 }

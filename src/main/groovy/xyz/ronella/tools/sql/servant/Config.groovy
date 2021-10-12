@@ -17,6 +17,7 @@ class Config {
     private String filename
     private String confDir
     private JsonConfigWrapper jsonWrapper
+    private String environment
 
     private static final String ENV_VAR_CONF_DIR = 'SQL_SERVANT_CONF_DIR'
 
@@ -43,8 +44,11 @@ class Config {
      * @param confDir The directory to contains the configuration file.
      * @param filename The filename of the configuration file excluding the extension
      *        (i.e. json).
+     * @param environment The environment to run.
+     *
+     * @since 2.1.0
      */
-    Config(String confDir, String filename, boolean suffix = true) {
+    Config(String confDir, String filename, String environment, boolean suffix = true) {
         String externalConf = System.getenv(ENV_VAR_CONF_DIR)
 
         if (!confDir && externalConf) {
@@ -57,6 +61,29 @@ class Config {
 
         this.confDir = "${new File(confDir?:'./conf').absolutePath}${File.separator}"
         this.filename = "${this.confDir}${filename?:'ss-default'}.json"
+        this.environment = environment
+    }
+
+    /**
+     * Returns the environment to use.
+     *
+     * @return The environment to use.
+     *
+     * @since 2.1.0
+     */
+    String getEnvironment() {
+        return environment
+    }
+
+    /**
+     * Creates an instance of Config based on the directory and filename provided.
+     *
+     * @param confDir The directory to contains the configuration file.
+     * @param filename The filename of the configuration file excluding the extension
+     *        (i.e. json).
+     */
+    Config(String confDir, String filename, boolean suffix = true) {
+        this(confDir, filename, null, suffix)
     }
 
     /**

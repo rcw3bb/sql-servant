@@ -1,5 +1,6 @@
 package xyz.ronella.tools.sql.servant
 
+import org.junit.Assert
 import org.junit.Test
 import xyz.ronella.tools.sql.servant.db.QueryMode
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
@@ -12,6 +13,7 @@ class ConfigTest {
     final def testEmptyDefaultConfig = new Config('./src/test/resources','empty')
     final def testReallyEmptyDefConfig = new Config('./src/test/resources','really-empty')
     final def testFilenameConfig = new Config('./src/test/resources','ss-filename')
+    final def testFilenameEnvConfig = new Config('./src/test/resources','ss-filename', 'ENV')
 
     @Test
     void testDefaultConfig() {
@@ -134,6 +136,11 @@ class ConfigTest {
     }
 
     @Test
+    void testFilenameEnvConnectionString() {
+        Assert.assertEquals('ENV test connection string', testFilenameEnvConfig.configAsJson.defaults.connectionString)
+    }
+
+    @Test
     void testFilenameQueries() {
         assert !testFilenameConfig.configAsJson.queries[0].filename
     }
@@ -141,6 +148,11 @@ class ConfigTest {
     @Test
     void testFilenameDescription() {
         assert 'Original Description'==testFilenameConfig.configAsJson.queries[0].description
+    }
+
+    @Test
+    void testFilenameEnvDescription() {
+        assert 'Env Original Description'==testFilenameEnvConfig.configAsJson.queries[0].description
     }
 
     @Test
@@ -173,6 +185,13 @@ class ConfigTest {
     }
 
     @Test
+    void testListenerOnDataQueriesEnv() {
+        File file = new File("${testFilenameConfig.configDirectory}/../listeners/sample-h2-data-env.bat")
+        String expected = file.absolutePath
+        assert expected == testFilenameEnvConfig.configAsJson.queries[0].listeners.onData
+    }
+
+    @Test
     void testFilenameDBPoolMinIdle() {
         assert 5 == testFilenameConfig.configAsJson.dbPoolConfig.minIdle
     }
@@ -186,6 +205,12 @@ class ConfigTest {
     void testFilenameParamNameExternal() {
         def params = testFilenameConfig.configAsJson.params
         assert null!=params.find({'param'==it.name})
+    }
+
+    @Test
+    void testFilenameEnvParamNameExternal() {
+        def params = testFilenameEnvConfig.configAsJson.params
+        assert null!=params.find({'param-env'==it.name})
     }
 
     @Test

@@ -80,7 +80,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
             }
         }
 
-        def config = new ConfigByEnv(new Config(cliArgs.confDir, cliArgs.config)).createConfigByEnv(cliArgs)
+        def config = new ConfigByEnv(new Config(cliArgs.confDir, cliArgs.config, cliArgs.environment)).createConfigByEnv(cliArgs)
         new QueryServant(config).perform(cliArgs)
     }
 }

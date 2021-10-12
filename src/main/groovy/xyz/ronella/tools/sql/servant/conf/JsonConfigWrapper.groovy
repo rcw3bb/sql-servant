@@ -5,6 +5,7 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.command.Invoker
 import xyz.ronella.tools.sql.servant.command.impl.GetConfigText
+import xyz.ronella.tools.sql.servant.command.impl.GetFilenameByEnv
 import xyz.ronella.tools.sql.servant.command.impl.ToJson
 import xyz.ronella.tools.sql.servant.listener.HasActiveListener
 import xyz.ronella.tools.sql.servant.listener.ListenerException
@@ -60,7 +61,9 @@ class JsonConfigWrapper extends JsonConfig {
     DefaultConfig getDefaults() {
         if (!this.defaults) {
             def defaults = jsonConfig.defaults?:new DefaultConfig()
-            DefaultConfig defaultsExternal = getJsonInstance {defaults.filename}
+            DefaultConfig defaultsExternal = getJsonInstance {
+                Invoker.invoke(new GetFilenameByEnv(defaults.filename, config.environment))
+            }
 
             final def EMPTY_LISTENERS = new ListenersConfig()
             final String DEFAULT_MODE = 'stmt'
@@ -117,9 +120,9 @@ class JsonConfigWrapper extends JsonConfig {
         }
     }
 
-    private static final ListenersConfig processExternalListeners(final ListenersConfig listeners) {
+    private static final ListenersConfig processExternalListeners(final String environment, final ListenersConfig listeners) {
         ListenersConfig externalListeners = getJsonInstance {
-            listeners.filename
+            Invoker.invoke(new GetFilenameByEnv(listeners.filename, environment))
         }
 
         ListenersConfig newListener = listeners
@@ -144,10 +147,10 @@ class JsonConfigWrapper extends JsonConfig {
         newListener
     }
 
-    private static final ListenersConfig initListeners(ListenersConfig defaultListeners, ListenersConfig queryListeners) {
+    private static final ListenersConfig initListeners(String environment, ListenersConfig defaultListeners, ListenersConfig queryListeners) {
 
-        ListenersConfig newDefaultListeners = processExternalListeners(defaultListeners)
-        ListenersConfig newQueryListeners = processExternalListeners(queryListeners)
+        ListenersConfig newDefaultListeners = processExternalListeners(environment, defaultListeners)
+        ListenersConfig newQueryListeners = processExternalListeners(environment, queryListeners)
 
         newQueryListeners.with {
             command = command ?: newDefaultListeners.command
@@ -205,7 +208,7 @@ class JsonConfigWrapper extends JsonConfig {
     private QueriesConfig createNewQueryConfig(QueriesConfig ___qryConfig, String description, QueriesConfig defaults) {
 
         DefaultConfig queriesExternal = getJsonInstance(QueriesConfig.class, {
-            ___qryConfig.filename
+            Invoker.invoke(new GetFilenameByEnv(___qryConfig.filename, config.environment))
         })
 
         String ___description = resolveValue(___qryConfig.description, queriesExternal, description,
@@ -235,7 +238,7 @@ class JsonConfigWrapper extends JsonConfig {
 
         processWindowsAuthentication(newQueriesConfig)
 
-        newQueriesConfig.listeners = initListeners(defaults.listeners, newQueriesConfig.listeners)
+        newQueriesConfig.listeners = initListeners(config.environment, defaults.listeners, newQueriesConfig.listeners)
 
         def newListeners = newQueriesConfig.listeners
 
@@ -280,7 +283,9 @@ class JsonConfigWrapper extends JsonConfig {
         if (!this.dbPoolConfig) {
             def dbPoolConfig = jsonConfig.dbPoolConfig?:new DBPoolConfig()
 
-            DBPoolConfig dbPoolExternal = getJsonInstance {dbPoolConfig.filename}
+            DBPoolConfig dbPoolExternal = getJsonInstance {
+                Invoker.invoke(new GetFilenameByEnv(dbPoolConfig.filename, config.environment))
+            }
 
             this.dbPoolConfig = new DBPoolConfig(
                     minIdle: resolveValue(dbPoolConfig.minIdle, dbPoolExternal, DB_POOL_MIN_IDLE,
@@ -308,7 +313,7 @@ class JsonConfigWrapper extends JsonConfig {
             def newParams = new ArrayList<ParamConfig>()
             locParams.each { ___paramConfig ->
                 ParamConfig paramExternal = getJsonInstance {
-                    ___paramConfig.filename
+                    Invoker.invoke(new GetFilenameByEnv(___paramConfig.filename, config.environment))
                 }
 
                 if (paramExternal) {
