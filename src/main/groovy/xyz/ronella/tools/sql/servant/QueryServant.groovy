@@ -131,9 +131,18 @@ class QueryServant {
                             }
                             catch(Exception exception) {
                                 if (!args.ignoreTaskException) {
-                                    throw new TaskException(exception)
+                                    if (args.isTestMode) {
+                                        throw new TaskException(exception)
+                                    }
+                                    else {
+                                        LOG.error(exception)
+                                        System.exit(ExitCode.TASK_EXCEPTION)
+                                    }
                                 }
                             }
+                        }
+                        if (!args.ignoreExecutionException && hasError) {
+                            throw new ExecutionException()
                         }
                     }
                     finally {
@@ -156,8 +165,18 @@ class QueryServant {
         catch (UnresolvedParametersException upe) {
             LOG.error("Missing parameter(s): ${upe.message}")
         }
-
-        LOG.info 'Done'
+        catch(ExecutionException ee) {
+            if (args.isTestMode) {
+                throw ee
+            }
+            else {
+                LOG.error(ee)
+                System.exit(ExitCode.EXECUTION_EXCEPTION)
+            }
+        }
+        finally {
+            LOG.info 'Done'
+        }
     }
 
 }

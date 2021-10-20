@@ -69,7 +69,7 @@ class QueryServantTest {
             QueryServant.hasError = true
             eraseDB.call()
             Assert.assertThrows(ExecutionException.class) {
-                testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreTaskException: true))
+                testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreTaskException: true, isTestMode: true))
             }
         }
         finally {
@@ -90,7 +90,7 @@ class QueryServantTest {
         try {
             eraseDB.call()
             Assert.assertThrows(TaskException.class) {
-                testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%']))
+                testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], isTestMode: true))
             }
         }
         finally {

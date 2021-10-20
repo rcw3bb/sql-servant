@@ -4,10 +4,9 @@ import org.apache.log4j.Logger
 
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
-import xyz.ronella.tools.sql.servant.ExecutionException
+import xyz.ronella.tools.sql.servant.ExitCode
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
-import xyz.ronella.tools.sql.servant.QueryServant
 import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
@@ -72,7 +71,13 @@ class DefaultServantOperation implements IOperation {
                     }
                     catch (TaskException te) {
                         if (!cliArgs.ignoreTaskException) {
-                            throw te
+                            if (cliArgs.isTestMode) {
+                                throw te
+                            }
+                            else {
+                                LOG.error(te)
+                                System.exit(ExitCode.TASK_EXCEPTION)
+                            }
                         }
                     }
                 }
@@ -90,17 +95,19 @@ class DefaultServantOperation implements IOperation {
                     }
                     catch (TaskException te) {
                         if (!cliArgs.ignoreTaskException) {
-                            throw te
+                            if (cliArgs.isTestMode) {
+                                throw te
+                            }
+                            else {
+                                LOG.error(te)
+                                System.exit(ExitCode.TASK_EXCEPTION)
+                            }
                         }
                     }
                 }
             }
         } else {
             LOG.warn("[${description}] Premature exit")
-        }
-
-        if (!cliArgs.ignoreExecutionException && QueryServant.hasError) {
-            throw new ExecutionException()
         }
     }
 }

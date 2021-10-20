@@ -57,4 +57,12 @@ class CliArgs {
      * @since 2.1.0
      */
     boolean ignoreTaskException
+
+    /**
+     * Private argument that is only used for testing.
+     *
+     * @since 2.1.0
+     */
+    boolean isTestMode
+
 }

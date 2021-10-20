@@ -3,6 +3,7 @@ package xyz.ronella.tools.sql.servant.impl
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
+import xyz.ronella.tools.sql.servant.ExitCode
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.QueryServant
@@ -70,7 +71,13 @@ class ServantNextOperationTask implements Callable<IStatus> {
                 }
                 catch(Exception exception) {
                     if (!cliArgs.ignoreTaskException) {
-                        throw new TaskException(exception)
+                        if (cliArgs.isTestMode) {
+                            throw new TaskException(exception)
+                        }
+                        else {
+                            LOG.error(exception)
+                            System.exit(ExitCode.TASK_EXCEPTION)
+                        }
                     }
                 }
             }

@@ -53,7 +53,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
                         {options.cd} : {cliArgs.confDir = options.cd},
                         {options.e} : {cliArgs.environment = options.e},
                         {options.iee} : {cliArgs.ignoreExecutionException = options.iee},
-                        {options.ite} : {cliArgs.ignoreExecutionException = options.ite},
+                        {options.ite} : {cliArgs.ignoreTaskException = options.ite},
                         {options.P} : {
                             int idx = 0
                             cliArgs.params = options.Ps.inject([:], {___result, ___item ->
