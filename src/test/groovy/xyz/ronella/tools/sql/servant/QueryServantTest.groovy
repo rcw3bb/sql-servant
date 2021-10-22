@@ -13,7 +13,7 @@ class QueryServantTest {
 
     @Before
     void initTest() {
-        QueryServant.hasError = false
+        QueryServant.hasExecutionException = false
     }
 
 
@@ -66,14 +66,14 @@ class QueryServantTest {
             }
         }
         try {
-            QueryServant.hasError = true
+            QueryServant.hasExecutionException = true
             eraseDB.call()
             Assert.assertThrows(ExecutionException.class) {
                 testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreTaskException: true, isTestMode: true))
             }
         }
         finally {
-            QueryServant.hasError = false
+            QueryServant.hasExecutionException = false
             eraseDB.call()
         }
     }
@@ -108,12 +108,12 @@ class QueryServantTest {
             }
         }
         try {
-            QueryServant.hasError = true
+            QueryServant.hasExecutionException = true
             eraseDB.call()
             testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true))
         }
         finally {
-            QueryServant.hasError = false
+            QueryServant.hasExecutionException = false
             eraseDB.call()
         }
     }

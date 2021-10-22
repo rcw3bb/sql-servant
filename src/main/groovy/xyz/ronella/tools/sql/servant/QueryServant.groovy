@@ -21,7 +21,7 @@ class QueryServant {
 
     public final static def LOG = Logger.getLogger(QueryServant.class.name)
     private final static Lock LOCK = new ReentrantLock()
-    public static def hasError = false
+    public static def hasExecutionException = false
 
     private static int usageLevel
 
@@ -100,6 +100,7 @@ class QueryServant {
         LOG.info "Configuration: ${config.configFilename}"
 
         def configJson = config.configAsJson
+        def hasExecutionExceptionThrown = false
 
         try {
             if (configJson) {
@@ -141,7 +142,7 @@ class QueryServant {
                                 }
                             }
                         }
-                        if (!args.ignoreExecutionException && hasError) {
+                        if (!args.ignoreExecutionException && hasExecutionException) {
                             throw new ExecutionException()
                         }
                     }
@@ -166,16 +167,17 @@ class QueryServant {
             LOG.error("Missing parameter(s): ${upe.message}")
         }
         catch(ExecutionException ee) {
+            LOG.error(ee)
+            hasExecutionExceptionThrown = true
             if (args.isTestMode) {
                 throw ee
-            }
-            else {
-                LOG.error(ee)
-                System.exit(ExitCode.EXECUTION_EXCEPTION)
             }
         }
         finally {
             LOG.info 'Done'
+        }
+        if (hasExecutionExceptionThrown) {
+            System.exit(ExitCode.EXECUTION_EXCEPTION)
         }
     }
 

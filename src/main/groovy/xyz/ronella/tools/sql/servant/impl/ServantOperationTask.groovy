@@ -2,7 +2,6 @@ package xyz.ronella.tools.sql.servant.impl
 
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.Config
-import xyz.ronella.tools.sql.servant.ExecutionException
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
@@ -104,7 +103,7 @@ class ServantOperationTask implements Callable<IStatus> {
             LOG.error(e.fillInStackTrace())
             LOG.info(message)
             invokeComplete(description, query, 'failed')
-            QueryServant.hasError = true
+            QueryServant.hasExecutionException = true
             throw new TaskException(message)
         }
         finally {
