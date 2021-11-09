@@ -1,10 +1,11 @@
 package xyz.ronella.tools.sql.servant.impl
 
+import static xyz.ronella.tools.sql.servant.QueryServant.*
+
 import org.apache.log4j.Logger
 
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
-import xyz.ronella.tools.sql.servant.ExitCode
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.TaskException
@@ -51,10 +52,12 @@ class DefaultServantOperation implements IOperation {
 
         def queries = qryConfig.queries
         if (queries && queries.length > 0) {
-            queries.each { query ->
-
+            for (query in queries) {
+                if (hasException(cliArgs)) {
+                    continueNext = false
+                    break
+                }
                 def updatedQuery = ParamManager.applyParams(cliArgs.params, query)
-
                 def servantTask = new ServantOperationTask(config, qryConfig, updatedQuery)
 
                 if (qryConfig.parallel) {
@@ -71,13 +74,10 @@ class DefaultServantOperation implements IOperation {
                     }
                     catch (TaskException te) {
                         if (!cliArgs.ignoreTaskException) {
-                            if (cliArgs.isTestMode) {
-                                throw te
-                            }
-                            else {
-                                LOG.error(te)
-                                System.exit(ExitCode.TASK_EXCEPTION)
-                            }
+                            LOG.error(te)
+                            setHasTaskException(true)
+                            continueNext = false
+                            break
                         }
                     }
                 }
@@ -95,13 +95,8 @@ class DefaultServantOperation implements IOperation {
                     }
                     catch (TaskException te) {
                         if (!cliArgs.ignoreTaskException) {
-                            if (cliArgs.isTestMode) {
-                                throw te
-                            }
-                            else {
-                                LOG.error(te)
-                                System.exit(ExitCode.TASK_EXCEPTION)
-                            }
+                            LOG.error(te)
+                            setHasTaskException(true)
                         }
                     }
                 }

@@ -16,10 +16,9 @@ class QueryServantTest {
         QueryServant.hasExecutionException = false
     }
 
-
     @Test
     void testOptionNoop() {
-        testDefaultQueryServant.perform(new CliArgs(noop: true))
+        testDefaultQueryServant.perform(new CliArgs(noop: true, isTestMode: true))
     }
 
     @Test
@@ -33,7 +32,7 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true, ignoreTaskException: true))
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true, ignoreTaskException: true, isTestMode: true))
         }
         finally {
             eraseDB.call()
@@ -49,7 +48,7 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2ErrorQueryServant.perform(new CliArgs(ignoreExecutionException: true, ignoreTaskException: true))
+            testH2ErrorQueryServant.perform(new CliArgs(ignoreExecutionException: true, ignoreTaskException: true, isTestMode: true))
         }
         finally {
             eraseDB.call()
@@ -110,7 +109,9 @@ class QueryServantTest {
         try {
             QueryServant.hasExecutionException = true
             eraseDB.call()
-            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true))
+            Assert.assertThrows(TaskException.class) {
+                testH2QueryServant.perform(new CliArgs(params: ['name': 'nam%'], ignoreExecutionException: true, isTestMode: true))
+            }
         }
         finally {
             QueryServant.hasExecutionException = false
@@ -129,7 +130,7 @@ class QueryServantTest {
         }
         try {
             eraseDB.call()
-            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true, ignoreTaskException: true))
+            testH2QueryServant.perform(new CliArgs(params: ['name' : 'nam%'], ignoreExecutionException: true, ignoreTaskException: true, isTestMode: true))
         }
         finally {
             eraseDB.call()

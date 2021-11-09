@@ -21,11 +21,46 @@ class QueryServant {
 
     public final static def LOG = Logger.getLogger(QueryServant.class.name)
     private final static Lock LOCK = new ReentrantLock()
-    public static def hasExecutionException = false
+    private static def hasExecutionExceptionThrown = false
+    private static def hasTaskExceptionThrown = false
 
     private static int usageLevel
 
     private Config config
+
+    static boolean getHasTaskException() {
+        try {
+            LOCK.lock()
+            return hasTaskExceptionThrown
+        }
+        finally {
+            LOCK.unlock()
+        }
+    }
+
+    static void setHasTaskException(boolean taskExceptionThrown) {
+        try {
+            LOCK.lock()
+            hasTaskExceptionThrown = taskExceptionThrown
+        }
+        finally {
+            LOCK.unlock()
+        }
+    }
+
+    static boolean getHasExecutionException() {
+        return hasExecutionExceptionThrown
+    }
+
+    static void setHasExecutionException(boolean executionExceptionThrown) {
+        try {
+            LOCK.lock()
+            hasExecutionExceptionThrown = executionExceptionThrown
+        }
+        finally {
+            LOCK.unlock()
+        }
+    }
 
     /**
      * Creates an instance of QueryServant.
@@ -60,6 +95,7 @@ class QueryServant {
         try {
             LOCK.lock()
             usageLevel--
+            LOG.debug("LockLevel : ${usageLevel}")
         }
         finally {
             LOCK.unlock()
@@ -87,6 +123,23 @@ class QueryServant {
         }
     }
 
+    static def hasException(CliArgs args) {
+        if (!args.noop) {
+            def hasTaskError = !args.ignoreTaskException && hasTaskException
+            def hasExecError = !args.ignoreExecutionException && hasExecutionException
+
+            if (!args.isTestMode) {
+                return hasTaskError || hasExecError
+            } else if (hasExecError) {
+                throw new ExecutionException()
+            } else if (hasTaskError) {
+                throw new TaskException()
+            }
+        }
+
+        return false
+    }
+
     /**
      * The actual method the is doing the configuration processing.
      *
@@ -100,7 +153,6 @@ class QueryServant {
         LOG.info "Configuration: ${config.configFilename}"
 
         def configJson = config.configAsJson
-        def hasExecutionExceptionThrown = false
 
         try {
             if (configJson) {
@@ -118,7 +170,10 @@ class QueryServant {
                 ParallelEngine.instance.with {
                     List<Future<IStatus>> futures = new ArrayList<>()
                     try {
-                        configJson.queries.each { qryConfig ->
+                        for (qryConfig in configJson.queries) {
+                            if (hasException(args)) {
+                                break
+                            }
                             if (LOG.isTraceEnabled()) {
                                 LOG.trace("Description: ${qryConfig.description}")
                                 LOG.trace("Connection String: ${qryConfig.connectionString}")
@@ -131,18 +186,16 @@ class QueryServant {
                                 iterator.next().get()
                             }
                             catch(Exception exception) {
+                                LOG.error(exception)
                                 if (!args.ignoreTaskException) {
+                                    hasTaskException=true
                                     if (args.isTestMode) {
                                         throw new TaskException(exception)
-                                    }
-                                    else {
-                                        LOG.error(exception)
-                                        System.exit(ExitCode.TASK_EXCEPTION)
                                     }
                                 }
                             }
                         }
-                        if (!args.ignoreExecutionException && hasExecutionException) {
+                        if (!args.ignoreExecutionException && args.ignoreTaskException && hasTaskException) {
                             throw new ExecutionException()
                         }
                     }
@@ -168,7 +221,7 @@ class QueryServant {
         }
         catch(ExecutionException ee) {
             LOG.error(ee)
-            hasExecutionExceptionThrown = true
+            hasExecutionException = true
             if (args.isTestMode) {
                 throw ee
             }
@@ -176,9 +229,13 @@ class QueryServant {
         finally {
             LOG.info 'Done'
         }
-        if (hasExecutionExceptionThrown) {
-            System.exit(ExitCode.EXECUTION_EXCEPTION)
+        if (!args.isTestMode) {
+            if (!args.ignoreExecutionException && hasExecutionException) {
+                System.exit(ExitCode.EXECUTION_EXCEPTION)
+            }
+            if (!args.ignoreTaskException && hasTaskException) {
+                System.exit(ExitCode.TASK_EXCEPTION)
+            }
         }
     }
-
 }

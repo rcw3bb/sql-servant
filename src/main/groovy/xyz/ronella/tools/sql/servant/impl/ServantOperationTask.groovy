@@ -52,7 +52,7 @@ class ServantOperationTask implements Callable<IStatus> {
      * The actual task to run by the engine which can also be called directly if not in
      * parallel mode.
      *
-     * @return An implmentation of IStatus.
+     * @return An implementation of IStatus.
      */
     @Override
     IStatus call() {
@@ -98,12 +98,12 @@ class ServantOperationTask implements Callable<IStatus> {
             invokeComplete(description, query, 'success')
             isSuccessful = true
         }
-        catch(Exception e) {
+        catch(Exception exp) {
             var message = "[${description}] Failed running: ${query}"
-            LOG.error(e.fillInStackTrace())
+            LOG.error(exp)
             LOG.info(message)
             invokeComplete(description, query, 'failed')
-            QueryServant.hasExecutionException = true
+            QueryServant.hasTaskException = true
             throw new TaskException(message)
         }
         finally {

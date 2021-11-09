@@ -10,6 +10,13 @@ class TaskException extends Exception {
 
     /**
      * Creates an instance of TaskException
+     */
+    TaskException() {
+        super()
+    }
+
+    /**
+     * Creates an instance of TaskException
      *
      * @param message The message for exception.
      */

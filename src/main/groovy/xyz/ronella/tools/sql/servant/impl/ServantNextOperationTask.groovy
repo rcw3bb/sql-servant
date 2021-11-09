@@ -1,13 +1,12 @@
 package xyz.ronella.tools.sql.servant.impl
 
+import static xyz.ronella.tools.sql.servant.QueryServant.*
+
 import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
-import xyz.ronella.tools.sql.servant.ExitCode
 import xyz.ronella.tools.sql.servant.IOperation
 import xyz.ronella.tools.sql.servant.IStatus
-import xyz.ronella.tools.sql.servant.QueryServant
-import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
 import java.util.concurrent.Callable
@@ -50,7 +49,7 @@ class ServantNextOperationTask implements Callable<IStatus> {
         this.config = config
         this.qryConfig = qryConfig
         this.cliArgs = cliArgs
-        QueryServant.usageLevelUp()
+        usageLevelUp()
     }
 
     /**
@@ -61,23 +60,19 @@ class ServantNextOperationTask implements Callable<IStatus> {
      */
     @Override
     IStatus call() {
-        boolean isSuccessful = false
+        def isSuccessful = false
 
         try {
-            boolean isEverythingSuccessful = true
-            localFutures.each {
+            def isEverythingSuccessful = true
+            for (localFuture in localFutures) {
                 try {
-                    isEverythingSuccessful = it.get().isSuccessful() && isEverythingSuccessful
+                    isEverythingSuccessful = localFuture.get().isSuccessful() && isEverythingSuccessful
                 }
                 catch(Exception exception) {
+                    LOG.error(exception)
                     if (!cliArgs.ignoreTaskException) {
-                        if (cliArgs.isTestMode) {
-                            throw new TaskException(exception)
-                        }
-                        else {
-                            LOG.error(exception)
-                            System.exit(ExitCode.TASK_EXCEPTION)
-                        }
+                        isEverythingSuccessful = false
+                        hasTaskException=true
                     }
                 }
             }
@@ -98,7 +93,7 @@ class ServantNextOperationTask implements Callable<IStatus> {
             }
         }
         finally {
-            QueryServant.usageLevelDown()
+            usageLevelDown()
         }
 
         return new DefaultStatus(isSuccessful)
