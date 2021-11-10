@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 : 2021-11-10
+
+### New
+
+* Implement **exit codes**.
+* **JAVA_HOME** environment variable is recognized.
+* Introduced **SS2_JAVA_HOME** to override JAVA_HOME. If the later is pointing to a wrong java version.
+* The *filename* property in the json configuration is now environment variable aware.
+
 ## 2.0.0 : 2021-07-22
 
 ### New

@@ -15,7 +15,7 @@ Java 11
 
 1. Ensure that you can connect to the internet. This is for downloading gradle and the dependencies.
 2. Ensure that you are running Java 11. 
-  You can run the following command if you like to validate your java version:
+    You can run the following command if you like to validate your java version:
 
    ```
    java -version
@@ -225,6 +225,8 @@ description | String | A user friendly description of the parameter. Overrides t
 value | String | The default value of the parameter. Overrides the entry in the externalized configuration.
 filename | String | Must have the filename of the externalized configuration.
 
+## Environment Variables
+
 #### SQL_SERVANT_CONF_DIR Environment Variable
 
 Set the **SQL_SERVANT_CONF_DIR** environment variable to have a different location for the following configuration folders:
@@ -233,6 +235,10 @@ Set the **SQL_SERVANT_CONF_DIR** environment variable to have a different locati
 - scripts
 
 _Note: This environment variable can be overridden by the -cd command line argument._
+
+#### SS2_JAVA_HOME Environment Variable
+
+If the existing **JAVA_HOME** or the **java executable** in not the supported version. Set the **SS2_JAVA_HOME** to the correct java version.
 
 ## Usage
 
