@@ -65,4 +65,17 @@ class CliArgs {
      */
     boolean isTestMode
 
+    /**
+     * Specifies the statements passed as inline parameter.
+     *
+     * @since 2.2.0
+     */
+    List<String> statements
+
+    /**
+     * Specifies the queries passed as inline parameter.
+     *
+     * @since 2.2.0
+     */
+    List<String> queries
 }
