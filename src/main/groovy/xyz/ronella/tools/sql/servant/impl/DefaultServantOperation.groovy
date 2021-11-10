@@ -27,6 +27,41 @@ class DefaultServantOperation implements IOperation {
 
     public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
 
+    private def processSubsequentQuery(List<Future<IStatus>> futures, List<Future<IStatus>> localFutures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
+        if (qryConfig.next) {
+            def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
+            if (qryConfig.parallel) {
+                futures.add(ParallelEngine.instance.process(nextTask))
+            } else {
+                try {
+                    nextTask.call()
+                }
+                catch (TaskException te) {
+                    if (!cliArgs.ignoreTaskException) {
+                        LOG.error(te)
+                        setHasTaskException(true)
+                    }
+                }
+            }
+        }
+    }
+
+    private def header(String description, QueriesConfig qryConfig) {
+        LOG.info "---[${description}]${qryConfig.parallel ? '[PARALLEL]' : ''}---"
+        LOG.info "[${description}] Connection String: ${qryConfig.connectionString}"
+        LOG.info "[${description}] Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
+    }
+
+    private def invokeWithParallelEngine(List<Future<IStatus>> localFutures, ServantOperationTask servantTask) {
+        ParallelEngine.instance.with {
+            if (!isStarted()) {
+                start()
+            }
+            def future = process(servantTask)
+            localFutures.add(future)
+        }
+    }
+
     /**
      * The default logic to actually execute the configured queries.
      *
@@ -43,9 +78,7 @@ class DefaultServantOperation implements IOperation {
             qryConfig.parallel=true
         }
 
-        LOG.info "---[${description}]${qryConfig.parallel ? '[PARALLEL]' : ''}---"
-        LOG.info "[${description}] Connection String: ${qryConfig.connectionString}"
-        LOG.info "[${description}] Mode: ${new QueryModeWrapper(qryConfig.mode).mode}"
+        header(description, qryConfig)
 
         List<Future<IStatus>> localFutures = new ArrayList<>()
         boolean continueNext = true
@@ -61,13 +94,7 @@ class DefaultServantOperation implements IOperation {
                 def servantTask = new ServantOperationTask(config, qryConfig, updatedQuery)
 
                 if (qryConfig.parallel) {
-                    ParallelEngine.instance.with {
-                        if (!isStarted()) {
-                            start()
-                        }
-                        def future = process(servantTask)
-                        localFutures.add(future)
-                    }
+                    invokeWithParallelEngine(localFutures, servantTask)
                 } else {
                     try {
                         continueNext = servantTask.call().isSuccessful() && continueNext
@@ -85,22 +112,7 @@ class DefaultServantOperation implements IOperation {
         }
 
         if (continueNext) {
-            if (qryConfig.next) {
-                def nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs)
-                if (qryConfig.parallel) {
-                    futures.add(ParallelEngine.instance.process(nextTask))
-                } else {
-                    try {
-                        nextTask.call()
-                    }
-                    catch (TaskException te) {
-                        if (!cliArgs.ignoreTaskException) {
-                            LOG.error(te)
-                            setHasTaskException(true)
-                        }
-                    }
-                }
-            }
+            processSubsequentQuery(futures, localFutures, config, qryConfig, cliArgs)
         } else {
             LOG.warn("[${description}] Premature exit")
         }

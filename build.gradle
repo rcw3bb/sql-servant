@@ -216,6 +216,6 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
     }
 }
 
-task packAll(dependsOn: ['pack', 'packMSSQLx64', 'packMSSQLx86']) {
+task packAll(dependsOn: ['pack', 'packMSSQLx64']) {
     group = buildBaseName
 }

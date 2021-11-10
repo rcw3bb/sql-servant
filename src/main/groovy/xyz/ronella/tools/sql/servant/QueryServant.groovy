@@ -140,74 +140,103 @@ class QueryServant {
         return false
     }
 
+    private def waitAllTasks(Iterator<Future<IStatus>> iterator, CliArgs args) {
+        while (iterator.hasNext()) {
+            try {
+                iterator.next().get()
+            }
+            catch(Exception exception) {
+                LOG.error(exception)
+                if (!args.ignoreTaskException) {
+                    hasTaskException=true
+                    if (args.isTestMode) {
+                        throw new TaskException(exception)
+                    }
+                }
+            }
+        }
+    }
+
+    private def logParams(CliArgs args, JsonConfig configJson) {
+        if (args.params) {
+            def strParams = configJson.params.inject(new StringBuilder(), {___result, ___item ->
+                ___result.append(___result.length()>0?', ':'').append(___item.name).
+                        append('=').append(___item.value)
+                ___result
+            })
+            LOG.info "Parameters: ${strParams}"
+        }
+    }
+
+    private def processQueries(CliArgs args, JsonConfig configJson, List<Future<IStatus>> futures) {
+        for (qryConfig in configJson.queries) {
+            if (hasException(args)) {
+                break
+            }
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Description: ${qryConfig.description}")
+                LOG.trace("Connection String: ${qryConfig.connectionString}")
+            }
+            new OperationStrategy(args).runOperation(futures, config, qryConfig)
+        }
+    }
+
+    private def invokeWithParallelEngine(CliArgs args, JsonConfig configJson) {
+        ParallelEngine.instance.with {
+            List<Future<IStatus>> futures = new ArrayList<>()
+            try {
+                processQueries(args, configJson, futures)
+                Iterator<Future<IStatus>> iterator=futures.iterator()
+                waitAllTasks(iterator, args)
+
+                if (!args.ignoreExecutionException && args.ignoreTaskException && hasTaskException) {
+                    throw new ExecutionException()
+                }
+            }
+            finally {
+                while (usageLevel != 0) {
+                    Thread.sleep(500)
+                }
+                if (isStarted()) {
+                    stop()
+                }
+            }
+        }
+    }
+
+    private def intro(CliArgs args) {
+        LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
+        if (args.environment) {
+            LOG.info "Environment: ${args.environment}"
+        }
+        LOG.info "Configuration: ${config.configFilename}"
+    }
+
+    static private def exitLogic(CliArgs args) {
+        if (!args.isTestMode) {
+            if (!args.ignoreExecutionException && hasExecutionException) {
+                System.exit(ExitCode.EXECUTION_EXCEPTION)
+            }
+            if (!args.ignoreTaskException && hasTaskException) {
+                System.exit(ExitCode.TASK_EXCEPTION)
+            }
+        }
+    }
+
     /**
      * The actual method the is doing the configuration processing.
      *
      * @param args An instance of CliArgs.
      */
     def perform(CliArgs args) {
-        LOG.info "User: ${System.getProperty("user.name")?:'Unknown'}"
-        if (args.environment) {
-            LOG.info "Environment: ${args.environment}"
-        }
-        LOG.info "Configuration: ${config.configFilename}"
-
+        intro(args)
         def configJson = config.configAsJson
 
         try {
             if (configJson) {
                 checkParams(args, configJson)
-
-                if (args.params) {
-                    def strParams = configJson.params.inject(new StringBuilder(), {___result, ___item ->
-                        ___result.append(___result.length()>0?', ':'').append(___item.name).
-                                append('=').append(___item.value)
-                        ___result
-                    })
-                    LOG.info "Parameters: ${strParams}"
-                }
-
-                ParallelEngine.instance.with {
-                    List<Future<IStatus>> futures = new ArrayList<>()
-                    try {
-                        for (qryConfig in configJson.queries) {
-                            if (hasException(args)) {
-                                break
-                            }
-                            if (LOG.isTraceEnabled()) {
-                                LOG.trace("Description: ${qryConfig.description}")
-                                LOG.trace("Connection String: ${qryConfig.connectionString}")
-                            }
-                            new OperationStrategy(args).runOperation(futures, config, qryConfig)
-                        }
-                        Iterator<Future<IStatus>> iterator=futures.iterator()
-                        while (iterator.hasNext()) {
-                            try {
-                                iterator.next().get()
-                            }
-                            catch(Exception exception) {
-                                LOG.error(exception)
-                                if (!args.ignoreTaskException) {
-                                    hasTaskException=true
-                                    if (args.isTestMode) {
-                                        throw new TaskException(exception)
-                                    }
-                                }
-                            }
-                        }
-                        if (!args.ignoreExecutionException && args.ignoreTaskException && hasTaskException) {
-                            throw new ExecutionException()
-                        }
-                    }
-                    finally {
-                        while (usageLevel != 0) {
-                            Thread.sleep(500)
-                        }
-                        if (isStarted()) {
-                            stop()
-                        }
-                    }
-                }
+                logParams(args, configJson)
+                invokeWithParallelEngine(args, configJson)
             }
             else {
                 LOG.info "Nothing to process."
@@ -229,13 +258,6 @@ class QueryServant {
         finally {
             LOG.info 'Done'
         }
-        if (!args.isTestMode) {
-            if (!args.ignoreExecutionException && hasExecutionException) {
-                System.exit(ExitCode.EXECUTION_EXCEPTION)
-            }
-            if (!args.ignoreTaskException && hasTaskException) {
-                System.exit(ExitCode.TASK_EXCEPTION)
-            }
-        }
+        exitLogic(args)
     }
 }

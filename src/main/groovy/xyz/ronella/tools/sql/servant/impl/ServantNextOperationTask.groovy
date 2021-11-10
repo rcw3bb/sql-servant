@@ -52,6 +52,17 @@ class ServantNextOperationTask implements Callable<IStatus> {
         usageLevelUp()
     }
 
+    private def processSubsequentQuery() {
+        def qryConfigNext = qryConfig.next
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Description: ${qryConfigNext.description}")
+            LOG.trace("Connection String: ${qryConfigNext.connectionString}")
+        }
+
+        operation.perform(localFutures, config, qryConfigNext, cliArgs)
+    }
+
     /**
      * The actual task to run by the engine which can also be called directly if not in
      * parallel mode.
@@ -77,15 +88,7 @@ class ServantNextOperationTask implements Callable<IStatus> {
                 }
             }
             if (isEverythingSuccessful) {
-
-                def qryConfigNext = qryConfig.next
-
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Description: ${qryConfigNext.description}")
-                    LOG.trace("Connection String: ${qryConfigNext.connectionString}")
-                }
-
-                operation.perform(localFutures, config, qryConfigNext, cliArgs)
+                processSubsequentQuery()
                 isSuccessful = true
             }
             else {

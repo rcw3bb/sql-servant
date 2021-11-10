@@ -5,6 +5,8 @@ import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IStatus
 import xyz.ronella.tools.sql.servant.TaskException
 import xyz.ronella.tools.sql.servant.async.ProcessedHolder
+import xyz.ronella.tools.sql.servant.conf.JsonConfig
+import xyz.ronella.tools.sql.servant.conf.ListenersConfig
 import xyz.ronella.tools.sql.servant.db.QueryMode
 import xyz.ronella.tools.sql.servant.db.QueryModeWrapper
 import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
@@ -48,6 +50,36 @@ class ServantOperationTask implements Callable<IStatus> {
         QueryServant.usageLevelUp()
     }
 
+    private def header(String description) {
+        LOG.info("[${description}] Executing: ${query}")
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Description: ${qryConfig.description}")
+            LOG.trace("Connection String: ${qryConfig.connectionString}")
+        }
+    }
+
+    private def buildQuery(String description, JsonConfig jsonConfig) {
+        String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
+
+        if ([QueryMode.SINGLE_QUERY_SCRIPT, QueryMode.SCRIPT].contains(new QueryModeWrapper(qryConfig.mode).mode)) {
+            parsedQuery = ParamManager.applyParams(jsonConfig.params, parsedQuery)
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("[${description}] Parsed Query: ${parsedQuery}")
+        }
+        return parsedQuery
+    }
+
+    private def invokeComplete(ListenersConfig listeners, String ___description, String ___query, String ___success)
+    {
+        if (listeners.onComplete) {
+            new ListenerInvoker(qryConfig).invokeCompleteListener(listeners.onComplete, ___description,
+                    ___query, ___success)
+        }
+    }
+
     /**
      * The actual task to run by the engine which can also be called directly if not in
      * parallel mode.
@@ -59,19 +91,7 @@ class ServantOperationTask implements Callable<IStatus> {
         def description = qryConfig.description
         def listeners = qryConfig.listeners
 
-        def invokeComplete = {String ___description, String ___query, String ___success ->
-            if (listeners.onComplete) {
-                new ListenerInvoker(qryConfig).invokeCompleteListener(listeners.onComplete, ___description,
-                        ___query, ___success)
-            }
-        }
-
-        LOG.info("[${description}] Executing: ${query}")
-
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Description: ${qryConfig.description}")
-            LOG.trace("Connection String: ${qryConfig.connectionString}")
-        }
+        header(description)
 
         def isProcessed = new ProcessedHolder().isProcessed(description)
 
@@ -83,26 +103,17 @@ class ServantOperationTask implements Callable<IStatus> {
         def startTime = new Date().time
         def jsonConfig = config.configAsJson
         try {
-            String parsedQuery = new QueryParserStrategy(config, qryConfig).parse(query)
-
-            if ([QueryMode.SINGLE_QUERY_SCRIPT, QueryMode.SCRIPT].contains(new QueryModeWrapper(qryConfig.mode).mode)) {
-                parsedQuery = ParamManager.applyParams(jsonConfig.params, parsedQuery)
-            }
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("[${description}] Parsed Query: ${parsedQuery}")
-            }
-            
+            String parsedQuery = buildQuery(description, jsonConfig)
             DBManager.getInstance(jsonConfig.dbPoolConfig).runStatement(qryConfig, parsedQuery)
             LOG.info("[${description}] Success running: ${query}")
-            invokeComplete(description, query, 'success')
+            invokeComplete(listeners, description, query, 'success')
             isSuccessful = true
         }
         catch(Exception exp) {
             var message = "[${description}] Failed running: ${query}"
             LOG.error(exp)
             LOG.info(message)
-            invokeComplete(description, query, 'failed')
+            invokeComplete(listeners, description, query, 'failed')
             QueryServant.hasTaskException = true
             throw new TaskException(message)
         }
