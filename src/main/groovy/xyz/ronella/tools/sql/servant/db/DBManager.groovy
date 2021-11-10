@@ -80,6 +80,7 @@ class DBManager {
                 LOCK.lock()
                 dataSource = DATA_SOURCES.get(connectionString)
                 if (!dataSource) {
+                    LOG.trace("Registering ${connectionString} to pool.")
                     Class.forName(qryConfig.jdbcDriver)
 
                     dataSource = new BasicDataSource()
@@ -101,6 +102,9 @@ class DBManager {
             finally {
                 LOCK.unlock()
             }
+        }
+        else {
+            LOG.trace("Retrieve ${connectionString} from pool.")
         }
 
         return dataSource
