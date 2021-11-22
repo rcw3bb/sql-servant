@@ -11,4 +11,4 @@ DRVS=@drivers@
 MAIN_JAR=${LIBS_DIR}/sql-servant-@app.version@.jar
 CLASSPATH=${SCRIPT_DIR}:${LIBS}:${MAIN_JAR}:${DRVS}
 
-java -cp ${CLASSPATH} @java.library.path@ sqlsrvnt $*
+java -cp ${CLASSPATH} -DUSER_DATA="${SCRIPT_DIR}" @java.library.path@ sqlsrvnt $*

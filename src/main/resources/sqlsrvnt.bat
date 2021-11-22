@@ -41,7 +41,7 @@ goto exit
 :run
 pushd %SCRIPT_DIR%
 %JAVA_EXE% -version
-%JAVA_EXE% -cp %CLASSPATH% @java.library.path@ sqlsrvnt %*
+%JAVA_EXE% -DUSER_DATA="%APPDATA%" -cp %CLASSPATH% @java.library.path@ sqlsrvnt %*
 popd
 
 :exit
