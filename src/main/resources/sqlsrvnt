@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#Requires Java 11+
+
+JAVA_EXE="java"
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 LIBS_DIR=${SCRIPT_DIR}/libs
 LIBS=@libraries@
@@ -11,4 +14,21 @@ DRVS=@drivers@
 MAIN_JAR=${LIBS_DIR}/sql-servant-@app.version@.jar
 CLASSPATH=${SCRIPT_DIR}:${LIBS}:${MAIN_JAR}:${DRVS}
 
-java -cp ${CLASSPATH} -DUSER_DATA="${SCRIPT_DIR}" @java.library.path@ sqlsrvnt $*
+if test "${SS2_JAVA_HOME}" != ''; then
+	echo "Using SS2_JAVA_HOME"
+	JAVA_EXE="${SS2_JAVA_HOME}/bin/${JAVA_EXE}"
+elif test "${JAVA_HOME}" != ''; then
+	echo "Using JAVA_HOME"
+	JAVA_EXE="${JAVA_HOME}/bin/${JAVA_EXE}"
+else
+	echo "Using default java"
+fi
+
+"${JAVA_EXE}" -version 2>&1 
+
+if test "$?" -eq 0; then
+  cd "${SCRIPT_DIR}"
+  "${JAVA_EXE}" -cp ${CLASSPATH} -DUSER_DATA="${SCRIPT_DIR}" @java.library.path@ sqlsrvnt $*
+else
+	echo "Java is required"
+fi
