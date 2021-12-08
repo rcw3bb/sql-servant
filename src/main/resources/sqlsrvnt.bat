@@ -20,7 +20,7 @@ if exist "%SS2_JAVA_HOME%" goto use_ss2_java_home
 rem Use JAVA_HOME if it exists.
 if exist "%JAVA_HOME%" goto use_java_home
 
-goto java_version
+goto use_default_java
 
 :use_ss2_java_home
 echo Using SS2_JAVA_HOME
@@ -30,17 +30,21 @@ goto java_version
 :use_java_home
 echo Using JAVA_HOME
 set JAVA_EXE="%JAVA_HOME:"=%\bin\%JAVA_EXE%"
+goto java_version
+
+:use_default_java
+echo Using default java
 
 :java_version
-%JAVA_EXE% -version >NUL 2>&1
+%JAVA_EXE% -version 2>&1
 if "%ERRORLEVEL%" == "0" goto run
 
-echo "Java is required"
+echo Java is required
 goto exit
 
 :run
+
 pushd %SCRIPT_DIR%
-%JAVA_EXE% -version
 %JAVA_EXE% -DUSER_DATA="%APPDATA%" -cp %CLASSPATH% @java.library.path@ sqlsrvnt %*
 popd
 
