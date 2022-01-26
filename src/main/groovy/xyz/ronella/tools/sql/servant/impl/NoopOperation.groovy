@@ -1,6 +1,6 @@
 package xyz.ronella.tools.sql.servant.impl
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.IOperation
@@ -20,7 +20,7 @@ import java.util.concurrent.Future
  */
 class NoopOperation implements IOperation {
 
-    public final static def LOG = Logger.getLogger(NoopOperation.class.name)
+    public final static def LOG = LogManager.getLogger(NoopOperation.class.name)
 
     /**
      * The actual implmentation that handles NOOP operation.

@@ -1,6 +1,6 @@
 package xyz.ronella.tools.sql.servant.conf
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.Validate
 import xyz.ronella.tools.sql.servant.command.Invoker
@@ -24,7 +24,7 @@ class JsonConfigWrapper extends JsonConfig {
     private QueriesConfig[] queries
     private ParamConfig[] params
 
-    public final static def LOG = Logger.getLogger(JsonConfigWrapper.class.name)
+    public final static def LOG = LogManager.getLogger(JsonConfigWrapper.class.name)
 
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase()
     private static final int DB_POOL_MIN_IDLE = 1

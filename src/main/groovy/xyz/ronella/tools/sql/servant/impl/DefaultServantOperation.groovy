@@ -2,7 +2,7 @@ package xyz.ronella.tools.sql.servant.impl
 
 import static xyz.ronella.tools.sql.servant.QueryServant.*
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
@@ -25,7 +25,7 @@ import java.util.concurrent.Future
  */
 class DefaultServantOperation implements IOperation {
 
-    public final static def LOG = Logger.getLogger(DefaultServantOperation.class.name)
+    public final static def LOG = LogManager.getLogger(DefaultServantOperation.class.name)
 
     private def processSubsequentQuery(List<Future<IStatus>> futures, List<Future<IStatus>> localFutures, Config config, QueriesConfig qryConfig, CliArgs cliArgs) {
         if (qryConfig.next) {

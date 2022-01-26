@@ -1,6 +1,6 @@
 package xyz.ronella.tools.sql.servant.listener
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
 
 import java.text.SimpleDateFormat
@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat
  */
 class ListenerInvoker {
 
-    public final static def LOG = Logger.getLogger(ListenerInvoker.class.name)
+    public final static def LOG = LogManager.getLogger(ListenerInvoker.class.name)
     private final static String DEFAULT_FILTER_REPLACEMENT = '_'
 
     private QueriesConfig qryConfig

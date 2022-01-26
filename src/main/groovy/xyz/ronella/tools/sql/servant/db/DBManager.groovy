@@ -1,7 +1,7 @@
 package xyz.ronella.tools.sql.servant.db
 
 import org.apache.commons.dbcp2.BasicDataSource
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import xyz.ronella.tools.sql.servant.listener.ListenerInvoker
 import xyz.ronella.tools.sql.servant.conf.DBPoolConfig
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig
@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock
  * @since 2018-10-07
  */
 class DBManager {
-    public final static def LOG = Logger.getLogger(DBManager.class.name)
+    public final static def LOG = LogManager.getLogger(DBManager.class.name)
 
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>()
     private static final Lock LOCK = new ReentrantLock()

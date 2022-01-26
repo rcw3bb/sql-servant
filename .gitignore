@@ -6,3 +6,4 @@ src/test/db/
 build/
 *.iml
 src/test/resources/listeners/*.txt
+log/

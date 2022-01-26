@@ -1,6 +1,6 @@
 package xyz.ronella.tools.sql.servant
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import xyz.ronella.tools.sql.servant.async.ParallelEngine
 import xyz.ronella.tools.sql.servant.conf.JsonConfig
 import xyz.ronella.tools.sql.servant.conf.ParamConfig
@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock
  */
 class QueryServant {
 
-    public final static def LOG = Logger.getLogger(QueryServant.class.name)
+    public final static def LOG = LogManager.getLogger(QueryServant.class.name)
     private final static Lock LOCK = new ReentrantLock()
     private static def hasExecutionExceptionThrown = false
     private static def hasTaskExceptionThrown = false

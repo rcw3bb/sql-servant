@@ -1,7 +1,7 @@
 package xyz.ronella.tools.sql.servant.command.impl
 
-import org.apache.log4j.Logger
 import xyz.ronella.tools.sql.servant.command.ICommandO
+import org.apache.logging.log4j.LogManager
 
 /**
  * A command for reading the raw configuration file into text file.
@@ -11,7 +11,7 @@ import xyz.ronella.tools.sql.servant.command.ICommandO
  */
 class GetConfigText implements ICommandO<String> {
 
-    public final static def LOG = Logger.getLogger(GetConfigText.class.name)
+    public final static def LOG = LogManager.getLogger(GetConfigText.class.name)
 
     private String filename
 

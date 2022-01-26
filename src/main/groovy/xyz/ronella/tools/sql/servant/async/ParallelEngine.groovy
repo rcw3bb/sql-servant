@@ -1,7 +1,7 @@
 package xyz.ronella.tools.sql.servant.async
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.Callable
@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock
 class ParallelEngine {
 
     private final static ReentrantLock LOCK = new ReentrantLock()
-    public final static def LOG = Logger.getLogger(ParallelEngine.class.name)
+    public final static def LOG = LogManager.getLogger(ParallelEngine.class.name)
 
     private static ParallelEngine INSTANCE
     private ExecutorService executor
