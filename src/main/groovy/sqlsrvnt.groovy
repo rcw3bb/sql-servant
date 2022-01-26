@@ -1,5 +1,4 @@
 import groovy.cli.picocli.CliBuilder
-import org.apache.commons.cli.Option
 import xyz.ronella.tools.sql.servant.CliArgs
 import xyz.ronella.tools.sql.servant.Config
 import xyz.ronella.tools.sql.servant.ConfigByEnv
@@ -28,7 +27,7 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         }
     }
 
-    def cli = new CliBuilder(usage:'sqlsrvnt [-[hnpv]] [-c <config-name>] [-e <environment>] [-P <parameter=value>] [-cd config-dir] [-ite] [-iee] [-s <statement1>[[;<statement2>][;<statementN>]]] [-q <query1>[[;<query2>][;<queryN>]]]')
+    def cli = new CliBuilder(usage:'sqlsrvnt -[hnpv] [-c <config-name>] [-e <environment>] [-P <parameter=value>] [-cd config-dir]')
     cli.with {
         h longOpt : 'help', 'Show usage information'
         n longOpt : 'noop', 'Run without actually performing the queries'
@@ -40,8 +39,6 @@ void processArgs(final CliArgs cliArgs, String ... args) {
         cd longOpt : 'confdir', args: 1, argName: 'config-dir', 'Find the configuration in the specified directory'
         e longOpt : 'env', args: 1, argName: 'environment', 'The environment associated with the configuration'
         P(args: 2, valueSeparator: '=', argName: 'parameter=value', 'Assigns value to the query parameters found in the configuration. This can be used multiple times.')
-        s(args: Option.UNLIMITED_VALUES, valueSeparator: ';', argName: 'statement', 'The inline statements to be executed')
-        q(args: Option.UNLIMITED_VALUES, valueSeparator: ';', argName: 'query', 'The inline queries to be executed')
     }
 
     def options = cli.parse(args)
@@ -57,8 +54,6 @@ void processArgs(final CliArgs cliArgs, String ... args) {
                         {options.e} : {cliArgs.environment = options.e},
                         {options.iee} : {cliArgs.ignoreExecutionException = options.iee},
                         {options.ite} : {cliArgs.ignoreTaskException = options.ite},
-                        {options.s} : {cliArgs.statements = options.ss},
-                        {options.q} : {cliArgs.queries = options.qs},
                         {options.P} : {
                             int idx = 0
                             cliArgs.params = options.Ps.inject([:], {___result, ___item ->
