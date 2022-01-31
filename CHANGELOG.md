@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.1 : 2022-01-31
+
+### Changed
+
+* Gradle and log4j2 update.
+* Made the noarc sqlsrvnt script behave as the win batch.
+* Update dependencies
+
 ## 2.1.0 : 2021-11-10
 
 ### New
