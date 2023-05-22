@@ -131,9 +131,11 @@ public class JsonConfigWrapper extends JsonConfig {
         final var externalListeners = getJsonInstance(ListenersConfig.class,
                 ()-> Invoker.invoke(new GetFilenameByEnv(listeners.getFilename(), environment)));
 
+        var newListener = listeners;
+
         if (externalListeners!=null) {
 
-            final var newListener = new ListenersConfig();
+            newListener = new ListenersConfig();
 
             newListener.setCommand(resolveValue(listeners.getCommand(), externalListeners, listeners.getCommand(), ListenersConfig::getCommand));
             newListener.setOnStart(resolveValue(listeners.getOnStart(), externalListeners, listeners.getCommand(), ListenersConfig::getOnStart));
@@ -142,10 +144,9 @@ public class JsonConfigWrapper extends JsonConfig {
             newListener.setOnComplete(resolveValue(listeners.getOnComplete(), externalListeners, listeners.getCommand(), ListenersConfig::getOnComplete));
             newListener.setFilter(resolveValue(listeners.getFilter(), externalListeners, listeners.getCommand(), ListenersConfig::getFilter));
 
-            return newListener;
         }
 
-        return null;
+        return newListener;
     }
 
     private static ListenersConfig initListeners(final String environment, final ListenersConfig defaultListeners, final ListenersConfig queryListeners) {
