@@ -53,7 +53,11 @@ public class JsonConfigWrapper extends JsonConfig {
                                                                                TYPE_OUTPUT defaultValue,
                                                                                Function<TYPE_EXTERNAL_SOURCE, TYPE_OUTPUT> fileInstanceValue
     ) {
-        return defaultInstanceValue==null ? ((fileInstance!=null ? fileInstanceValue.apply(fileInstance) : defaultValue)==null ? null : defaultValue) : defaultInstanceValue;
+        /*
+        return defaultInstanceValue==null ? ((fileInstance!=null ? fileInstanceValue(fileInstance) : defaultValue) ?: defaultValue) : defaultInstanceValue
+        */
+        final var byFileInstance = (fileInstance!=null ? fileInstanceValue.apply(fileInstance) : defaultValue);
+        return defaultInstanceValue==null ? (byFileInstance==null ? defaultValue : byFileInstance) : defaultInstanceValue;
     }
 
     /**
@@ -64,8 +68,7 @@ public class JsonConfigWrapper extends JsonConfig {
     public DefaultConfig getDefaults() {
         var defaults = this.defaults;
         if (defaults==null) {
-            defaults = jsonConfig.getDefaults();
-            defaults = defaults==null ? new DefaultConfig() : null;
+            defaults = jsonConfig.getDefaults()!=null ? jsonConfig.getDefaults(): new DefaultConfig();
 
             final var filename = defaults.getFilename();
             final var defaultsExternal = getJsonInstance(QueriesConfig.class,
