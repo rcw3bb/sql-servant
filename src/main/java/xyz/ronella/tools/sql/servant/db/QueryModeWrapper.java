@@ -15,7 +15,7 @@ public class QueryModeWrapper {
      *
      * @param mode The string representation of the mode.
      */
-    public QueryModeWrapper(String mode) {
+    public QueryModeWrapper(final String mode) {
         this.mode = mode;
     }
 
@@ -25,13 +25,18 @@ public class QueryModeWrapper {
      * @return An instance of QueryMode enumeration.
      */
     public QueryMode getMode() throws QueryModeException {
+        String targetMode = mode;
+        if (mode==null) {
+            targetMode = "___INVALID___";
+        }
 
-        switch (this.mode) {
+        switch (targetMode) {
             case "stmt" : return QueryMode.STATEMENT;
             case "query" : return QueryMode.QUERY;
             case "script" : return QueryMode.SCRIPT;
             case "sqs" : return QueryMode.SINGLE_QUERY_SCRIPT;
             default : throw new QueryModeException(String.format("Mode=%s", this.mode));
         }
+
     }
 }

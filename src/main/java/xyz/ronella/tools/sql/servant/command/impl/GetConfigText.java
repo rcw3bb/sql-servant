@@ -3,6 +3,7 @@ package xyz.ronella.tools.sql.servant.command.impl;
 import org.apache.logging.log4j.Logger;
 import xyz.ronella.tools.sql.servant.command.ICommandO;
 import org.apache.logging.log4j.LogManager;
+import xyz.ronella.trivial.decorator.StringBuilderAppender;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +39,7 @@ public class GetConfigText implements ICommandO<String> {
         }
 
         if (file.exists() && file.canRead()) {
-            final var sb = new StringBuilder();
+            final var sb = new StringBuilderAppender((___sb) -> ___sb.append(___sb.length() > 0 ? System.lineSeparator() : ""));
             final Scanner scanner;
 
             try {
@@ -49,7 +50,6 @@ public class GetConfigText implements ICommandO<String> {
             }
             while (scanner.hasNextLine()) {
                 sb.append(scanner.nextLine());
-                sb.append(System.lineSeparator());
             }
             scanner.close();
 

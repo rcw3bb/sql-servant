@@ -114,18 +114,21 @@ public class QueryServant {
 
         final var hasUnexpectedParameter = new Mutable<>(false);
         final var keys = new Mutable<>("");
+        final var params = args.getParams();
 
-        args.getParams().forEach((___key, ___value) -> {
-            final var configParam = Arrays.stream(configJson.getParams())
-                    .filter(___param -> ___param.getName().equals(___key))
-                    .findFirst();
-            if (configParam.isEmpty()) {
-                hasUnexpectedParameter.set(true);
-                keys.set(___key);
-                throw new RuntimeException(new UnexpectedParameterException(___key));
-            }
-            configParam.get().setValue(___value);
-        });
+        if (params!=null) {
+            params.forEach((___key, ___value) -> {
+                final var configParam = Arrays.stream(configJson.getParams())
+                        .filter(___param -> ___param.getName().equals(___key))
+                        .findFirst();
+                if (configParam.isEmpty()) {
+                    hasUnexpectedParameter.set(true);
+                    keys.set(___key);
+                    throw new RuntimeException(new UnexpectedParameterException(___key));
+                }
+                configParam.get().setValue(___value);
+            });
+        }
 
         if (hasUnexpectedParameter.get()) {
             throw new UnexpectedParameterException(keys.get());
@@ -181,7 +184,8 @@ public class QueryServant {
     }
 
     private void logParams(final CliArgs args, final JsonConfig configJson) {
-        if (!args.getParams().isEmpty()) {
+        final var params = args.getParams();
+        if (params!=null && !args.getParams().isEmpty()) {
             final var strParams = new StringBuilderAppender(___sb -> ___sb.append(___sb.length()>0 ? ", ": ""));
 
             Arrays.stream(configJson.getParams()).forEach(___item ->

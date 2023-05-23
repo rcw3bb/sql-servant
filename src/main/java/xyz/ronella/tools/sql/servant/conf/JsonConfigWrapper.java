@@ -36,6 +36,7 @@ public class JsonConfigWrapper extends JsonConfig {
     private static final int DB_POOL_MAX_OPEN_PREPARED_STATEMENTS = 50;
     private static final Function<Integer, String> DEFAULT_QUERY_DESCRIPTION = ___idx -> String.format("Query %s", ___idx);
     private static final String DB_MSSQL_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String DEFAULT_LISTENER_FILTER = "\"%";
 
     /**
      * Creates an instance of JsonConfigWrapper.
@@ -53,9 +54,6 @@ public class JsonConfigWrapper extends JsonConfig {
                                                                                TYPE_OUTPUT defaultValue,
                                                                                Function<TYPE_EXTERNAL_SOURCE, TYPE_OUTPUT> fileInstanceValue
     ) {
-        /*
-        return defaultInstanceValue==null ? ((fileInstance!=null ? fileInstanceValue(fileInstance) : defaultValue) ?: defaultValue) : defaultInstanceValue
-        */
         final var byFileInstance = (fileInstance!=null ? fileInstanceValue.apply(fileInstance) : defaultValue);
         return defaultInstanceValue==null ? (byFileInstance==null ? defaultValue : byFileInstance) : defaultInstanceValue;
     }
@@ -103,6 +101,10 @@ public class JsonConfigWrapper extends JsonConfig {
     private void resolveListeners(final ListenersConfig listenersConfig) {
         final var listenerDirectory = config.getListenerDirectory();
         final var listeners = List.of("onStart", "onHeader", "onData", "onComplete");
+
+        if (listenersConfig.getFilter()==null) {
+            listenersConfig.setFilter(DEFAULT_LISTENER_FILTER);
+        }
 
         listeners.forEach((___field) -> {
             try {
@@ -228,8 +230,9 @@ public class JsonConfigWrapper extends JsonConfig {
         newQueriesConfig.setListeners(initListeners(config.getEnvironment(), defaults.getListeners(), newQueriesConfig.getListeners()));
 
         final var newListeners = newQueriesConfig.getListeners();
+        final var parallel = newQueriesConfig.getParallel();
 
-        if (newQueriesConfig.getParallel() && new Validate(new HasActiveListener()).check(newListeners)) {
+        if (parallel!=null && parallel && new Validate(new HasActiveListener()).check(newListeners)) {
             LOG.info(String.format("[%s] Converting to non-parallel processing because of active listener.", ___description));
             newQueriesConfig.setParallel(false);
         }
@@ -252,11 +255,14 @@ public class JsonConfigWrapper extends JsonConfig {
     public QueriesConfig[] getQueries() {
         if (this.queries==null) {
             final var queries = new ArrayList<QueriesConfig>();
+            final var jsonConfigQueries = jsonConfig.getQueries();
 
-            for (int ___idx = 0; ___idx < jsonConfig.getQueries().length; ___idx++) {
-                final var it = jsonConfig.getQueries()[___idx];
-                queries.add(createNewQueryConfig(it, it.getDescription()!=null ? it.getDescription() : DEFAULT_QUERY_DESCRIPTION.apply(___idx+1),
-                        new QueriesConfigDefaultWrapper(this.getDefaults())));
+            if (jsonConfigQueries!=null) {
+                for (int ___idx = 0; ___idx < jsonConfig.getQueries().length; ___idx++) {
+                    final var it = jsonConfig.getQueries()[___idx];
+                    queries.add(createNewQueryConfig(it, it.getDescription() != null ? it.getDescription() : DEFAULT_QUERY_DESCRIPTION.apply(___idx + 1),
+                            new QueriesConfigDefaultWrapper(this.getDefaults())));
+                }
             }
 
             this.queries = queries.toArray(new QueriesConfig[0]);

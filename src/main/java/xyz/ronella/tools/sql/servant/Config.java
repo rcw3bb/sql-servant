@@ -162,7 +162,7 @@ public class Config {
         if (jsonWrapper==null) {
             final var jsonStr = Invoker.invoke(new GetConfigText(filename));
             if (jsonStr!=null) {
-                jsonWrapper = new JsonConfigWrapper(this, Invoker.invoke(new ToJson<JsonConfig>(jsonStr, JsonConfig.class)));
+                jsonWrapper = new JsonConfigWrapper(this, Invoker.invoke(new ToJson<>(jsonStr, JsonConfig.class)));
             }
         }
         return jsonWrapper;

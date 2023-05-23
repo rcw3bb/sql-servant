@@ -29,7 +29,8 @@ public class DefaultServantOperation implements IOperation {
     public void processSubsequentQuery(final List<Future<IStatus>> futures, final List<Future<IStatus>> localFutures, final Config config, final QueriesConfig qryConfig, final CliArgs cliArgs) {
         if (qryConfig.getNext()!=null) {
             final var nextTask = new ServantNextOperationTask(this, futures, localFutures, config, qryConfig, cliArgs);
-            if (qryConfig.getParallel()) {
+            final var parallel = qryConfig.getParallel();
+            if (parallel!=null && parallel) {
                 futures.add(ParallelEngine.getInstance().process(nextTask));
             } else {
                 try {
@@ -91,8 +92,8 @@ public class DefaultServantOperation implements IOperation {
                     }
                     final var updatedQuery = ParamManager.applyParams(cliArgs.getParams(), query);
                     final var servantTask = new ServantOperationTask(config, qryConfig, updatedQuery);
-
-                    if (qryConfig.getParallel() != null) {
+                    final var parallel = qryConfig.getParallel();
+                    if (parallel != null && parallel) {
                         invokeWithParallelEngine(localFutures, servantTask);
                     } else {
                         continueNext = servantTask.call().isSuccessful() && continueNext;

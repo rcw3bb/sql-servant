@@ -6,6 +6,8 @@ import xyz.ronella.trivial.decorator.Mutable;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +65,14 @@ public class ParamManager implements IValidator<String> {
         return newQuery.get();
     }
 
+    private static String find(final CharSequence self, final Pattern pattern) {
+        Matcher matcher = pattern.matcher(self.toString());
+        if (matcher.find()) {
+            return matcher.group(0);
+        }
+        return null;
+    }
+
     /**
      * The implementation for testing if the query was tidied successfully.
      *
@@ -71,6 +81,6 @@ public class ParamManager implements IValidator<String> {
      */
     @Override
     public boolean test(final String query) {
-        return query == null || !query.matches(String.format("%s\\w*?%s", DEFAULT_DELIMITER, DEFAULT_DELIMITER));
+        return query == null || find(query, Pattern.compile(DEFAULT_DELIMITER + "\\w*?" + DEFAULT_DELIMITER)) == null;
     }
 }
