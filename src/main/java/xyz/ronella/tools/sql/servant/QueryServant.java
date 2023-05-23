@@ -189,7 +189,7 @@ public class QueryServant {
             final var strParams = new StringBuilderAppender(___sb -> ___sb.append(___sb.length()>0 ? ", ": ""));
 
             Arrays.stream(configJson.getParams()).forEach(___item ->
-                    strParams.append(___item.getName(), "=", ___item.getValue()));
+                    strParams.append(String.format("%s=%s", ___item.getName(), ___item.getValue())));
 
             LOG.info(String.format("Parameters: %s", strParams));
         }
