@@ -40,7 +40,7 @@ public class NoopOperation implements IOperation {
             qryConfig.setParallel(true);
         }
 
-        LOG.info(String.format("---[%s]%s---", qryConfig.getDescription(), qryConfig.getParallel()!=null ? "[PARALLEL]" : ""));
+        LOG.info(String.format("---[%s]%s---", qryConfig.getDescription(), qryConfig.getParallel()!=null && qryConfig.getParallel() ? "[PARALLEL]" : ""));
         LOG.info(String.format("Connection String: %s", qryConfig.getConnectionString()));
         LOG.info(String.format("Mode: %s", new QueryModeWrapper(qryConfig.getMode()).getMode()));
         final var queries = qryConfig.getQueries();

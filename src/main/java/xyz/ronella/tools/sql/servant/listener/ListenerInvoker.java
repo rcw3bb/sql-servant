@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 import xyz.ronella.tools.sql.servant.conf.QueriesConfig;
 import xyz.ronella.trivial.handy.CommandRunner;
 import xyz.ronella.trivial.handy.MissingCommandException;
+import xyz.ronella.trivial.handy.impl.CommandArray;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
@@ -67,7 +69,40 @@ public final class ListenerInvoker {
                             }
                         },
                         cmd);
-            } catch (MissingCommandException mce) {
+            } catch (Exception mce) {
+                LOG.error(mce.getMessage());
+                throw new RuntimeException(mce);
+            }
+
+            LOG.debug(output);
+            if (error.length() > 0) {
+                throw new ListenerException(String.format("Failed to execute: %s", cmd));
+            }
+        }
+    }
+
+    private static void runCommand(final CommandArray cmd) throws ListenerException {
+        if (cmd!=null) {
+            final var output = new StringBuilder();
+            final var error = new StringBuilder();
+
+            try {
+                CommandRunner.runCommand(___pb -> ___pb.redirectErrorStream(true), (___output, ___error) ->
+                        {
+                            try(final var outputReader = new Scanner(___output);
+                                final var errorReader = new Scanner(___error)) {
+
+                                while (outputReader.hasNextLine()) {
+                                    output.append(outputReader.nextLine()).append("\n");
+                                }
+
+                                while (errorReader.hasNextLine()) {
+                                    error.append(errorReader.nextLine()).append("\n");
+                                }
+                            }
+                        },
+                        cmd);
+            } catch (Exception mce) {
                 LOG.error(mce.getMessage());
                 throw new RuntimeException(mce);
             }
@@ -83,6 +118,29 @@ public final class ListenerInvoker {
         return data.replaceAll(getFilter(), DEFAULT_FILTER_REPLACEMENT);
     }
 
+    private CommandArray createCommandArray(final String command, final String args) {
+        final var splitCommand = command.split("\\s");
+        String program = command;
+        final var progArgs = new ArrayList<String>();
+        if (splitCommand.length>1) {
+            program = splitCommand[0];
+            for (int idx = 1; idx < splitCommand.length; idx++) {
+                progArgs.add(splitCommand[idx]);
+            }
+        }
+
+        final var commandBuilder = CommandArray.getBuilder()
+                .setProgram(program);
+
+        if (!progArgs.isEmpty()) {
+            commandBuilder.addArgs(progArgs);
+        }
+
+        commandBuilder.addArg(args);
+
+        return commandBuilder.build();
+    }
+
     /**
      * The method responsible for invoking the start listener.
      *
@@ -94,10 +152,14 @@ public final class ListenerInvoker {
     public void invokeStartListener(final String cmd, final String description, final String query, boolean firstTime) throws ListenerException {
         final var command = getCommand();
         if (command!=null) {
-            final var cmdToRun = String.format("%s \"\"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\"",
-                    command, cmd, getDateArg(), applyFilter(description), applyFilter(query), firstTime);
-            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), cmdToRun));
-            runCommand(cmdToRun);
+
+            final var args = String.format("\"\"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\"",
+                    cmd, getDateArg(), applyFilter(description), applyFilter(query), firstTime);
+
+            final var commandArray = createCommandArray(command, args);
+
+            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), String.join(" ", commandArray.getCommand())));
+            runCommand(commandArray);
         }
     }
 
@@ -118,10 +180,13 @@ public final class ListenerInvoker {
                 }).toString();
         final var command = getCommand();
         if (command!=null) {
-            final var cmdToRun = String.format("%s \"\"%s\" \"%s\" \"%s\" \"%s\" %s\"",
-                    command, cmd, getDateArg(), applyFilter(description), applyFilter(query), args);
-            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), cmdToRun));
-            runCommand(cmdToRun);
+            final var commandArgs = String.format("\"\"%s\" \"%s\" \"%s\" \"%s\" %s\"",
+                    cmd, getDateArg(), applyFilter(description), applyFilter(query), args);
+
+            final var commandArray = createCommandArray(command, commandArgs);
+
+            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), String.join(" ", commandArray.getCommand())));
+            runCommand(commandArray);
         }
     }
 
@@ -136,10 +201,13 @@ public final class ListenerInvoker {
     public void invokeCompleteListener(final String cmd, final String description, final String query, final String success) throws ListenerException {
         final var command = getCommand();
         if (command!=null) {
-            final var cmdToRun = String.format("%s \"\"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\"",
-                    command, cmd, getDateArg(), applyFilter(description), applyFilter(query), success);
-            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), cmdToRun));
-            runCommand(cmdToRun);
+            final var args = String.format("\"\"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\"",
+                    cmd, getDateArg(), applyFilter(description), applyFilter(query), success);
+
+            final var commandArray = createCommandArray(command, args);
+
+            LOG.debug(String.format("[%s] %s", qryConfig.getDescription(), String.join(" ", commandArray.getCommand())));
+            runCommand(commandArray);
         }
     }
 }

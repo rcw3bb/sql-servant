@@ -47,7 +47,7 @@ public class DefaultServantOperation implements IOperation {
     }
 
     private void header(final String description, final QueriesConfig qryConfig) throws QueryModeException {
-        LOG.info(String.format("---[%s]%s---", description, qryConfig.getParallel()!=null ? "[PARALLEL]" : ""));
+        LOG.info(String.format("---[%s]%s---", description, qryConfig.getParallel()!=null && qryConfig.getParallel() ? "[PARALLEL]" : ""));
         LOG.info(String.format("[%s] Connection String: %s", description, qryConfig.getConnectionString()));
         LOG.info(String.format("[%s] Mode: %s", description, new QueryModeWrapper(qryConfig.getMode()).getMode()));
     }
