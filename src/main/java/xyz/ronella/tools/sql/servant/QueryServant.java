@@ -102,7 +102,7 @@ public class QueryServant {
         try {
             LOCK.lock();
             usageLevel--;
-            LOG.debug("LockLevel : ${usageLevel}");
+            LOG.debug(String.format("LockLevel : %s", usageLevel));
         }
         finally {
             LOCK.unlock();
@@ -139,10 +139,11 @@ public class QueryServant {
 
             final var sbResult = new StringBuilderAppender(___sb -> ___sb.append(___sb.length()>0 ? ", " : ""));
             nullParams.forEach(___item -> {
-                sbResult.append(___item.getName());
+                final var output = new StringBuilderAppender().append(___item.getName());
                 if (___item.getDescription()!=null) {
-                    sbResult.append("[", ___item.getDescription(), "]");
+                    output.append(String.format("[%s]", ___item.getDescription()));
                 }
+                sbResult.append(output.toString());
             });
 
             throw new UnresolvedParametersException(sbResult.toString());
@@ -201,8 +202,8 @@ public class QueryServant {
                 break;
             }
             if (LOG.isTraceEnabled()) {
-                LOG.trace("Description: ${qryConfig.description}");
-                LOG.trace("Connection String: ${qryConfig.connectionString}");
+                LOG.trace(String.format("Description: %s",qryConfig.getDescription()));
+                LOG.trace(String.format("Connection String: %s", qryConfig.getConnectionString()));
             }
             new OperationStrategy(args).runOperation(futures, config, qryConfig);
         }

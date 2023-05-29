@@ -45,7 +45,7 @@ goto exit
 :run
 
 pushd %SCRIPT_DIR%
-%JAVA_EXE% -DUSER_DATA="%APPDATA%" -cp %CLASSPATH% @java.library.path@ sqlsrvnt %*
+%JAVA_EXE% -DUSER_DATA="%APPDATA%" -cp %CLASSPATH% @java.library.path@ xyz.ronella.tools.sql.servant.SQLServant %*
 popd
 
 :exit

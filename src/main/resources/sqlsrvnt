@@ -28,7 +28,7 @@ fi
 
 if test "$?" -eq 0; then
   cd "${SCRIPT_DIR}"
-  "${JAVA_EXE}" -cp ${CLASSPATH} -DUSER_DATA="${SCRIPT_DIR}" @java.library.path@ sqlsrvnt $*
+  "${JAVA_EXE}" -cp ${CLASSPATH} -DUSER_DATA="${SCRIPT_DIR}" @java.library.path@ xyz.ronella.tools.sql.servant.SQLServant $*
 else
 	echo "Java is required"
 fi

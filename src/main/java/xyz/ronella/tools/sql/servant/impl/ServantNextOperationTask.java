@@ -95,7 +95,7 @@ public class ServantNextOperationTask implements Callable<IStatus> {
                 isSuccessful = true;
             }
             else {
-                LOG.warn("[${qryConfig.description}] Premature exit");
+                LOG.warn(String.format("[%s] Premature exit", qryConfig.getDescription()));
             }
         } catch (QueryModeException e) {
             throw new RuntimeException(e);
