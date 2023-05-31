@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.0 : 2023-06-01
+
+### New
+
+* Favored the usage of java in the main code. No change in functionality but the main code was fully refactored.
+
+### Changed
+
+* Dependencies update.
+
 ## 2.1.1 : 2022-01-31
 
 ### Changed

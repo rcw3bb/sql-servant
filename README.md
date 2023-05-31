@@ -288,7 +288,7 @@ sqlsrvnt -v
 
 * [Gradle](https://gradle.org/) - Dependency Management
 * [Maven](https://maven.apache.org/) - Dependency Repository
-* [Groovy](http://groovy-lang.org/) - Coding Language
+* [Java](https://www.oracle.com/nz/java/) - Coding Language
 
 ## Author
 
