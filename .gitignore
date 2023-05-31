@@ -7,3 +7,4 @@ build/
 *.iml
 src/test/resources/listeners/*.txt
 log/
+snyk.exe

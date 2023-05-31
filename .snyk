@@ -1,0 +1,8 @@
+ version: v1.25.0
+ ignore:
+    SNYK-JAVA-COMH2DATABASE-3146851:
+     - com.h2database:h2@2.1.214:
+         reason: sql-servant is not an always live service.
+    SNYK-JAVA-COMH2DATABASE-31685:
+      - com.h2database:h2@2.1.214:
+          reason: sql-servant is not an always live service.
