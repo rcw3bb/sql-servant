@@ -1,8 +1,11 @@
  version: v1.25.0
  ignore:
-    SNYK-JAVA-COMH2DATABASE-3146851:
-     - com.h2database:h2@2.1.214:
-         reason: sql-servant is not an always live service.
-    SNYK-JAVA-COMH2DATABASE-31685:
-      - com.h2database:h2@2.1.214:
-          reason: sql-servant is not an always live service.
+  SNYK-JAVA-ORGJSON-5962464:
+     - org.json:json@20200518:
+         reason: This is introduced by the snyk plugin and not part of the package to be released.
+  SNYK-JAVA-ORGJSON-5488379:
+     - org.json:json@20200518:
+         reason: This is introduced by the snyk plugin and not part of the package to be released.
+  SNYK-JAVA-COMH2DATABASE-31685:
+     - com.h2database:h2@2.2.220:
+         reason: This is not a service that always running

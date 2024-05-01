@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'xyz.ronella.tools'
-version '3.0.0'
+version '3.0.1'
 
 sourceCompatibility = 1.11
 
@@ -49,10 +49,10 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    drivers 'com.h2database:h2:2.1.214'
+    drivers 'com.h2database:h2:2.2.220'
     mssql 'com.microsoft.sqlserver:mssql-jdbc:9.4.1.jre11'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.h2database:h2:2.1.214'
+    testImplementation 'com.h2database:h2:2.2.220'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
 
@@ -243,4 +243,8 @@ task packMSSQLx86(type: Zip, dependsOn: 'jar') {
 
 task packAll(dependsOn: ['pack', 'packMSSQLx64']) {
     group = buildBaseName
+}
+
+test {
+    finalizedBy('snyk-test')
 }
