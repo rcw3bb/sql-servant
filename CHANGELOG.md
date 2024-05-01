@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.1 : 2024-05-01
+
+### Changed
+
+* Dependencies update.
+
 ## 3.0.0 : 2023-06-01
 
 ### New
